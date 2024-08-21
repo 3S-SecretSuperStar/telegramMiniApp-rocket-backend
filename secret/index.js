@@ -1,7 +1,8 @@
 import {cipher} from '../utils/globals.js'
 
+const password = encodeURIComponent("YYWrbh527(@#");
 // const connectionString = 'TSwRcaWUR6z01B4nQrMmVkt2HU19lKJzxk4s/5VNxBTsae1OHithmQeGv0zZwbMNelnLrcNGMBvkW529+2lnF3Qz9OZxG7gg/w+2RSgjpJycsguwSMjUbnmq7w/G+/V8F1r4rlzcL4nUtJ6ylfe+'
-const connectionString = "mongodb://127.0.0.1:27017"
+const connectionString = `mongodb+srv://juliosantos950527:${password}@cluster0.kqiaa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 const staticSalt = '6RqRHnxZtoyQfJJ65vSXgLlP1Y3VypbF'
 
 // const privateKey = 'rQqKWG24YJsZpUOWTWEiQ/WmQOZAssKeTDDnwkH4CKSUsiLvHLnjtQhDC2o6BSv7h+TSRA6q0yxzHavZDJCOGe3mDhJTzL4DUpz0xbKIgNg='
