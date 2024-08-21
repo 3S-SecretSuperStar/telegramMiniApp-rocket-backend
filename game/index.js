@@ -31,6 +31,8 @@ export function startGame (connection, data, setStopFlag) {
   connection.sendUTF(JSON.stringify({ operation: 'started' }))
 
   const autoStop = parseFloat(data.autoStop)
+  result=20;
+  console.log(result," ",autoStop)
 
   if (result < autoStop) {
     const time = Math.sqrt((result - 1) / ACCELERATION * 2).toFixed(0)
