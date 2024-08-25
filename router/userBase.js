@@ -110,7 +110,7 @@ export async function register (req) {
       guests: [],
       balance: {
         virtual: 10,
-        real: 0
+        real: 10
       },
       gamesHistory: {
         virtual: [],
