@@ -150,7 +150,7 @@ async function onListening () {
   try{
     await client.connect();
     setDb(client.db('rocketx'))
-    // checkDeposits()
+    checkDeposits()
     setInterval(checkDeposits, 60 * 60 * 1000)
   } catch(error){
     console.error("Database connection error:", error);
