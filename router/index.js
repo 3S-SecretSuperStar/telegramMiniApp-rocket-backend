@@ -32,13 +32,15 @@ function routeFunc (controller) {
 const postRequests = [
   ['login', userBase.login],
   ['logout', userBase.logout],
-  ['register', userBase.register],
   ['recovery', userBase.recovery],
   ['change_password', userBase.changePassword],
   ['change_email', userBase.changeEmail],
   ['support', userBase.support],
   ['users_info', userBase.usersInfo],
-  ['resend_letter', userBase.resendConfirmationLetter]
+  ['resend_letter', userBase.resendConfirmationLetter],
+  ['game_history', userBase.gameHistory],
+  ['task_perform', userBase.taskPerform],
+  ['task_balance',userBase.taskBalance],
 ]
 
 postRequests.forEach(([path, controller]) => {

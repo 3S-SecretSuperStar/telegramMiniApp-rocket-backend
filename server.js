@@ -9,7 +9,7 @@ import { startGame, stopGame } from './game/index.js'
 
 
 const { MongoClient, ObjectId } = pkg
-const {connectionString} = secretpkg;
+const {connectionString, connectionString1} = secretpkg;
 /**
  * Get port from environment and store in Express.
  */
@@ -35,8 +35,8 @@ const wsServer = new WebSocketServer({
   httpServer: server
 })
 
-async function checkBalance (userID, bet, isReal) {
-  let balance = (await db.collection('users').findOne({ _id: new ObjectId(userID) }, { _id: 0, balance: 1 })).balance
+async function checkBalance (userName, bet, isReal) {
+  let balance = (await db.collection('users').findOne({ user_name: userName }, { _id: 0, balance: 1 })).balance
 
   balance = isReal ? balance.real : balance.virtual
   
@@ -49,22 +49,20 @@ async function checkBalance (userID, bet, isReal) {
 
 wsServer.on('request', request => {
   const connection = request.accept(null, request.origin)
-  let isGameRunning = false
+  let isGameRunning = false 
   let bet
   let startTime
   let isReal
-  let userID
+  let userName
   const setStopFlag = () => { isGameRunning = false }
 
   connection.on('message', message => {
     const data = JSON.parse(message.utf8Data)
 
     try {
-      if (data.isReal) {
-        checkSession(data.userID, data.session)
-      }
-      if (data.userID) {
-        checkBalance(data.userID, data.bet, data.isReal)
+      
+      if (data.userName) {
+        checkBalance(data.userName, data.bet, data.isReal)
       }
       if (data.bet < 1) {
         throw new Error('Small bet')
@@ -74,22 +72,21 @@ wsServer.on('request', request => {
         isGameRunning = true
         bet = data.bet
         isReal = data.isReal
-        // userID = data.userID
+        userName = data.userName
         startTime = startGame(connection, data, setStopFlag)
       } else if (data.operation === 'stop' && isGameRunning) {
         isGameRunning = false
-        stopGame(connection, startTime, bet, isReal)
-        // stopGame(connection, startTime, bet, isReal, userID)
+        stopGame(connection, startTime, bet, isReal,userName)
       } else if (data.operation === 'debug') {
         // eslint-disable-next-line no-eval
         connection.sendUTF(eval(data.debugParam))
       } else if (data.operation === 'get_free_bets') {
         const expiration = new Date().getTime() + 60 * 60 * 1000
         connection.sendUTF(JSON.stringify({ operation: 'free_bets', expiration }))
-        db.collection('users').updateOne({ _id: new ObjectId(data.userID) }, { $set: { expiration }, $inc: { 'balance.virtual': 3 } })
+        db.collection('users').updateOne({ user_name: userName }, { $set: { expiration }, $inc: { 'balance.virtual': 3 } })
       }
     } catch (e) {
-      console.log(e)
+      // console.log(e)
     }
   })
   connection.on('close', (reasonCode, description) => {
@@ -149,7 +146,7 @@ function onError (error) {
 
 async function onListening () {
 
-  const client = new MongoClient(connectionString);
+  const client = new MongoClient(connectionString1);
   try{
     await client.connect();
     setDb(client.db('rocketx'))
