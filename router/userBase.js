@@ -131,7 +131,8 @@ export async function register (userName,realName) {
         achieve_task: [],
         done_task : []
       } ,
-      friend : ""
+      friend : "",
+      first_state : true
    
     })
   }
@@ -164,7 +165,7 @@ export async function taskPerform(req){
 export async function usersInfo (req) {
   await register(req.body.userName,req.body.realName)
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
-  const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1 }).toArray()
+  const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1 }).toArray()
   return {
     allUsersData: data.map(i => {
       // i.btc.wallet.publicAddress = cipher.decrypt(i.btc.wallet.publicAddress)
@@ -203,6 +204,10 @@ export async function gameHistory (req) {
   return {gamesHistory:{real : realHistory, virtual : virtualHistory}}
 }
 
+
+export async function checkFirst (req) {
+ await db.collection('users').updateOne({ user_name: req.body.userName }, { $set: { 'first_state': false} })
+}
 
 /**
  * Get deposits and send btc to shared wallet
@@ -394,7 +399,6 @@ export async function getFriend (req, res){
 
     const data = await db.collection('users').find({friend:req.body.userName}).project({ _id: 0, name: 1,   balance: 1,  ranking: 1 }).toArray()
 
-    
     return {friendData: data}
   } catch (error) {
     res.status(400).json({ msg: error });
