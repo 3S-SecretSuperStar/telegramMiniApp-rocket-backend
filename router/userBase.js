@@ -363,12 +363,12 @@ export async function taskBalance (req){
    await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.real' : parseFloat(data.amount)}, $push : {'task.done_task':data.task}});
 }
 export async function addFriend (req, res){
-  register(req.body.userName, req.body.realName);
+  await register(req.body.userName, req.body.realName);
   
   try {
-    const friend_check = await db.collection('users').findOne({ 'friend': req.body.friend });
+    const friend_check = await db.collection('users').findOne({ 'user_name': req.body.userName });
    
-    if (friend_check) {
+    if (friend_check.friend !=="") {
       
       return res
         .status(400)
