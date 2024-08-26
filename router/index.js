@@ -43,6 +43,7 @@ const postRequests = [
   ['task_balance',userBase.taskBalance],
   ['add_friend', userBase.addFriend],
   ['get_friend', userBase.getFriend],
+  ['check_first',userBase.checkFirst]
 
 ]
 
