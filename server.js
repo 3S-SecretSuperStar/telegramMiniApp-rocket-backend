@@ -146,7 +146,7 @@ function onError (error) {
 
 async function onListening () {
 
-  const client = new MongoClient(connectionString1);
+  const client = new MongoClient(connectionString);
   try{
     await client.connect();
     setDb(client.db('rocketx'))
