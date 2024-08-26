@@ -406,3 +406,11 @@ export async function getFriend (req, res){
   } 
 };
 
+export async function getTask (req){
+  try{
+    const data = await db.collection('tasks').find({}).project({_id:0, src:1, title:1,amount:1}).toArray()
+    return {task:data}
+  }catch(error){
+    console.log(error)
+  }
+}
