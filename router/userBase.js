@@ -206,7 +206,8 @@ export async function gameHistory (req) {
 
 
 export async function checkFirst (req) {
- await db.collection('users').updateOne({ user_name: req.body.userName }, { $set: { 'first_state': false} })
+  console.log(req.body.userName)
+  db.collection('users').updateOne({ user_name: req.body.userName }, { $set: { 'first_state': "false"} })
 }
 
 /**
