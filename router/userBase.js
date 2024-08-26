@@ -131,7 +131,7 @@ export async function register (req) {
         achieve_task: [],
         done_task : []
       } ,
-      friend : []
+      friend : ""
    
     })
   }
@@ -363,10 +363,11 @@ export async function taskBalance (req){
    await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.real' : parseFloat(data.amount)}, $push : {'task.done_task':data.task}});
 }
 export async function addFriend (req, res){
+  register();
   
   try {
     const friend_check = await db.collection('users').findOne({ 'friend': req.body.friend });
-    
+   
     if (friend_check) {
       
       return res
@@ -389,7 +390,7 @@ export async function addFriend (req, res){
 };
 export async function getFriend (req, res){
   try {
-    
+   
 
     const data = await db.collection('users').find({friend:req.body.userName}).project({ _id: 0, name: 1,   balance: 1,  ranking: 1 }).toArray()
 
