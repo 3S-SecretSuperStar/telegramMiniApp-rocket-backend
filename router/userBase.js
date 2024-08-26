@@ -99,15 +99,15 @@ export async function endSession (userName) {
  * @param {Object} req Request object
  * @returns {Object} User info and session key
  */
-export async function register (req) {
-  validateName(req.body.realName)
-  const isUnique = await isNameUnique(req.body.userName)
+export async function register (userName,realName) {
+  validateName(realName)
+  const isUnique = await isNameUnique(userName)
   console.log("unique:", isUnique);
   if(isUnique){
     await db.collection('users').insertOne({
       registrationDateTime: new Date(),
-      user_name: req.body.userName,
-      name: req.body.realName,
+      user_name: userName,
+      name: realName,
       guests: [],
       balance: {
         virtual: 10,
@@ -162,7 +162,7 @@ export async function taskPerform(req){
  * Get info for profile pages
  */
 export async function usersInfo (req) {
-  await register(req)
+  await register(req.body.userName,req.body.realName)
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
   const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1 }).toArray()
   return {
@@ -363,7 +363,7 @@ export async function taskBalance (req){
    await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.real' : parseFloat(data.amount)}, $push : {'task.done_task':data.task}});
 }
 export async function addFriend (req, res){
-  register();
+  register(req.body.userName, req.body.realName);
   
   try {
     const friend_check = await db.collection('users').findOne({ 'friend': req.body.friend });
