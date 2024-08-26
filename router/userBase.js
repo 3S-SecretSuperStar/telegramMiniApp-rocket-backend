@@ -131,7 +131,7 @@ export async function register (req) {
         achieve_task: [],
         done_task : []
       } ,
-      claimTask : []
+      friend : []
    
     })
   }
@@ -362,3 +362,41 @@ export async function taskBalance (req){
   const data = req.body;
    await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.real' : parseFloat(data.amount)}, $push : {'task.done_task':data.task}});
 }
+export async function addFriend (req, res){
+  
+  try {
+    const friend_check = await db.collection('users').findOne({ 'friend': req.body.friend });
+    
+    if (friend_check) {
+      
+      return res
+        .status(400)
+        .json({ msg: "You are already added in friend item" });
+    } else {
+      
+      await db.collection('users').updateOne(
+        { user_name: req.body.userName },
+        { $set:{'friend' :req.body.friend }})
+        
+      await db.collection('users').updateOne(
+          { user_name: req.body.friend},
+          { $inc: { 'balance.real': 100,'total_earning':100} })
+      // res.json(friend_new);
+    }
+  } catch (error) {
+    res.status(400).json({ msg: error });
+  }
+};
+export async function getFriend (req, res){
+  try {
+    
+
+    const data = await db.collection('users').find({friend:req.body.userName}).project({ _id: 0, name: 1,   balance: 1,  ranking: 1 }).toArray()
+
+    
+    return {friendData: data}
+  } catch (error) {
+    res.status(400).json({ msg: error });
+  } 
+};
+

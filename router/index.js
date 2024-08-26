@@ -41,6 +41,9 @@ const postRequests = [
   ['game_history', userBase.gameHistory],
   ['task_perform', userBase.taskPerform],
   ['task_balance',userBase.taskBalance],
+  ['add_friend', userBase.addFriend],
+  ['get_friend', userBase.getFriend],
+
 ]
 
 postRequests.forEach(([path, controller]) => {

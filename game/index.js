@@ -48,7 +48,7 @@ async function writeStatistics (isReal, userName, historyData) {
       db.collection('users').updateOne(
         { user_name: userName },
         { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': parseFloat(historyData.profit)}, 
-        $set: {'total_earning' : totalEarning.toFixed(2), 'ranking' :RANKING_DATA[rankingIndex] } })
+        $set: {'total_earning' : parseFloat(totalEarning.toFixed(2)), 'ranking' :RANKING_DATA[rankingIndex] } })
     } else {
       db.collection('users').updateOne(
         { user_name: userName },
