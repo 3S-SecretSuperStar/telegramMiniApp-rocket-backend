@@ -32,8 +32,8 @@ async function writeStatistics (isReal, userName, historyData) {
     if (isReal) {
       const totalEarningInfo = await db.collection('users').findOne({user_name:userName},{_id : 0, total_earning:1})  ;
       console.log("total_earnning  ",totalEarningInfo.total_earning);
-      const totalEarning = parseFloat(totalEarningInfo.total_earning) + parseFloat(historyData.profit);
-      console.log(totalEarning)
+      const totalEarning = parseFloat(totalEarningInfo.total_earning) + (historyData.profit>0 ?parseFloat(historyData.profit):0);
+      console.log("total_earning",totalEarning)
       let rankingIndex = 0;
       if(totalEarning<100) rankingIndex = 0;
       if(totalEarning>=100 && totalEarning < 500) rankingIndex = 1;
