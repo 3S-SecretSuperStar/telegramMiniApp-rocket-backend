@@ -7,7 +7,7 @@ let timeout
 const { ObjectId } = pkg
 
 const formatedDate =()=>{ 
-  const currentDate = moment().format('L');
+  const currentDate = moment().utc().format('L');
   console.log(currentDate)
   return currentDate
 } ;
