@@ -1,11 +1,15 @@
 import { ACCELERATION, db, MAX_WIN, RANKING_DATA, TASK_LIST, TASK_TYPE } from '../utils/globals.js'
+import moment from 'moment'
 import pkg from 'mongodb'
 
 
 let timeout
 const { ObjectId } = pkg
-const currentDate = new Date();
-const formatedDate = `${currentDate.getMonth()+1}/${currentDate.getDate()}/${currentDate.getFullYear()}`;
+
+const formatedDate =()=>{ 
+  const currentDate = moment().toISOString(new Date());
+  return `${currentDate.getMonth()+1}/${currentDate.getDate()}/${currentDate.getFullYear()}`
+} ;
 
 let continueCounter  = 0;
 
@@ -79,9 +83,8 @@ export  function startGame (connection, data, setStopFlag) {
     continueCounter = 0;
     timeout = setTimeout(() => {
       setStopFlag();
-      const currentDate = new Date();
       const historyData = {
-        date: formatedDate,
+        date: formatedDate(),
         crash: result,
         bet: data.bet,
         stop: 'x',
@@ -98,7 +101,7 @@ export  function startGame (connection, data, setStopFlag) {
       setStopFlag()
       continueCounter += 1;
       const historyData = {
-        date: formatedDate,
+        date: formatedDate(),
         crash: 'x',
         bet: data.bet,
         stop: autoStop,
@@ -130,8 +133,9 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
   clearTimeout(timeout)
   const time = Date.now() - startTime
   const result = ACCELERATION * time * time / 2
+ 
   const historyData = {
-    date: formatedDate,
+    date: formatedDate(),
     crash: 'x',
     bet,
     stop: (result + 1).toFixed(2),
