@@ -7,7 +7,7 @@ let timeout
 const { ObjectId } = pkg
 
 const formatedDate =()=>{ 
-  const currentDate = moment().subtract(10, 'days').calendar();
+  const currentDate = moment().format('L');
   console.log(currentDate)
   return currentDate
 } ;
