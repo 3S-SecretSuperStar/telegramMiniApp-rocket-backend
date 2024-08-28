@@ -7,8 +7,9 @@ let timeout
 const { ObjectId } = pkg
 
 const formatedDate =()=>{ 
-  const currentDate = moment().toISOString(new Date());
-  return `${currentDate.getMonth()+1}/${currentDate.getDate()}/${currentDate.getFullYear()}`
+  const currentDate = moment().format().subtract(10, 'days').calendar();
+  console.log(currentDate)
+  return currentDate
 } ;
 
 let continueCounter  = 0;
