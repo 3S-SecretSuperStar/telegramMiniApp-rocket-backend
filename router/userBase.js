@@ -375,12 +375,15 @@ export async function addFriend (req, res){
     const friend_check = await db.collection('users').findOne({ 'user_name': req.body.userName });
    
     if (friend_check.friend !=="") {
-      
       return res
         .status(400)
         .json({ msg: "You are already added in friend item" });
-    } else {
-      
+    } 
+    if( friend_check.user_name === req.body.userName){
+      return res
+        .status(400)
+        .json({ msg: "You can't added myself" });
+    } 
       await db.collection('users').updateOne(
         { user_name: req.body.userName },
         { $set:{'friend' :req.body.friend }})
@@ -389,7 +392,6 @@ export async function addFriend (req, res){
           { user_name: req.body.friend},
           { $inc: { 'balance.real': 100,'total_earning':100} })
       // res.json(friend_new);
-    }
   } catch (error) {
     res.status(400).json({ msg: error });
   }
