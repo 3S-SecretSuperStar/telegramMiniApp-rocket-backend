@@ -366,7 +366,7 @@ export async function getWithdraws (req) {
 
 export async function taskBalance (req){
   const data = req.body;
-   await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.real' : parseFloat(data.amount)}, $push : {'task.done_task':data.task}});
+   await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.real' : parseFloat(data.amount), 'total_earning' : parseFloat(data.amount)}, $push : {'task.done_task':data.task}});
 }
 export async function addFriend (req, res){
   await register(req.body.userName, req.body.realName);
