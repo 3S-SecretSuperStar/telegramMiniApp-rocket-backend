@@ -378,7 +378,7 @@ export async function addFriend (req, res){
       return res
         .status(400)
         .json({ msg: "You are already added in friend item" });
-    }else if( friend_check.user_name === req.body.userName){
+    }else if( friend_check.user_name === req.body.friend){
       return res
         .status(400)
         .json({ msg: "You can't added myself" });
