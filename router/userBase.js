@@ -387,7 +387,7 @@ export async function addFriend (req, res){
         { user_name: req.body.userName },
         { $set:{'friend' :req.body.friend }})
         
-      await db.collection('users').updateOne(
+      await db.collection('users').updateOne( 
           { user_name: req.body.friend},
           { $inc: { 'balance.real': 100,'total_earning':100} })
       // res.json(friend_new);
