@@ -130,7 +130,7 @@ export  function startGame (connection, data, setStopFlag) {
 }
 
 export function stopGame (connection, startTime, bet, isReal, userName) {
-  continueCounter = 0;
+  continueCounter += 1;
   clearTimeout(timeout)
   const time = Date.now() - startTime
   const result = ACCELERATION * time * time / 2
