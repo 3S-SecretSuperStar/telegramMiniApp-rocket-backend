@@ -111,7 +111,7 @@ export async function register (userName,realName) {
       guests: [],
       balance: {
         virtual: 10,
-        real: 10
+        real: 0
       },
       gamesHistory: {
         virtual: [],
