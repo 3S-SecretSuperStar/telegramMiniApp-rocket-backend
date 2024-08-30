@@ -117,8 +117,14 @@ export async function register (userName,realName) {
         virtual: [],
         real: []
       },
-      ranking:RANKING_DATA[0],
-      total_earning:0,
+      ranking:{
+        virtual: RANKING_DATA[0],
+        real: RANKING_DATA[0]
+      },
+      total_earning:{
+        virtual: 0,
+        real: 0
+      },
       btc: {
         wallet: generateWallet(),
         deposits: [],
@@ -127,9 +133,15 @@ export async function register (userName,realName) {
         deposited: 0
       },
       expiration: new Date().getTime(),
-      task:{
-        achieve_task: [],
-        done_task : []
+        task:{
+          virtual: {
+            achieve_task: [],
+            done_task : []
+          },
+          real: {
+            achieve_task: [],
+            done_task : []
+          },
       } ,
       friend : "",
       first_state : true
@@ -193,7 +205,7 @@ export async function gameHistory (req) {
   let data = await db.collection('users').findOne({user_name: req.body.userName}, { _id: 0,  gamesHistory: 1, })
 
   realHistory = data.gamesHistory.real;
-  virtualHistory = virtualHistory;
+  virtualHistory = data.gamesHistory.virtual;
   if (realHistory.length > req.body.historySize) {
     realHistory = realHistory.slice(realHistory.length - req.body.historySize)
   } else realHistory = data.gamesHistory.real
@@ -366,7 +378,10 @@ export async function getWithdraws (req) {
 
 export async function taskBalance (req){
   const data = req.body;
-   await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.real' : parseFloat(data.amount), 'total_earning' : parseFloat(data.amount)}, $push : {'task.done_task':data.task}});
+  if(data.real)
+   await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.real' : parseFloat(data.amount), 'total_earning.real' : parseFloat(data.amount)}, $push : {'task.real.done_task':data.task}});
+  else
+   await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.virtual' : parseFloat(data.amount), 'total_earning.virtual' : parseFloat(data.amount)}, $push : {'task.virtual.done_task':data.task}});
 }
 export async function addFriend (req, res){
   await register(req.body.userName, req.body.realName);
@@ -386,13 +401,24 @@ export async function addFriend (req, res){
       await db.collection('users').updateOne(
         { user_name: req.body.userName },
         { $set:{'friend' :req.body.friend }})
-        
-      await db.collection('users').updateOne( 
+       if(req.body.real) 
+       {
+        await db.collection('users').updateOne( 
           { user_name: req.body.userName},
-          { $inc: { 'balance.real': 25,'total_earning':25} })
-      await db.collection('users').updateOne( 
-            { user_name: req.body.friend},
-            { $inc: { 'balance.real': 25,'total_earning':25} })
+          { $inc: { 'balance.real': 25,'total_earning.real':25} })
+        await db.collection('users').updateOne( 
+          { user_name: req.body.friend},
+          { $inc: { 'balance.real': 25,'total_earning.real':25} })
+       }else
+       {
+        await db.collection('users').updateOne( 
+          { user_name: req.body.userName},
+          { $inc: { 'balance.virtual': 25,'total_earning.virtual':25} })
+        await db.collection('users').updateOne( 
+          { user_name: req.body.friend},
+          { $inc: { 'balance.virtual': 25,'total_earning.virtual':25} })
+       }
+      
       // res.json(friend_new);
 
     }

@@ -14,9 +14,15 @@ const formatedDate =()=>{
 
 let continueCounter  = 0;
 
-async function writeTask(userName,performTask) {
+async function writeTask(userName,performTask,isReal) {
   const data = await db.collection('users').findOne({user_name : userName},{_id: 0, performTask: 1, task: 1});
-  const combinedArray = [...data.task.achieve_task, ...performTask];
+
+  let combinedArray ;
+  if(isReal)
+    combinedArray = [...data.task.real.achieve_task, ...performTask];
+  else
+    combinedArray = [...data.task.virtual.achieve_task, ...performTask];
+
   console.log(combinedArray)
 
   // create a Set to track unique names
@@ -29,15 +35,20 @@ async function writeTask(userName,performTask) {
     return false;
   })
   console.log(uniqueArray)
-  await db.collection('users').updateOne({user_name : userName}, {$set : {'task.achieve_task' : uniqueArray}});
+  if(isReal)
+    await db.collection('users').updateOne({user_name : userName}, {$set : {'task.real.achieve_task' : uniqueArray}});
+  else
+    await db.collection('users').updateOne({user_name : userName}, {$set : {'task.virtual.achieve_task' : uniqueArray}});
+
+
 }
 
 async function writeStatistics (isReal, userName, historyData) {
   if (userName) {
     if (isReal) {
       const totalEarningInfo = await db.collection('users').findOne({user_name:userName},{_id : 0, total_earning:1})  ;
-      console.log("total_earnning  ",totalEarningInfo.total_earning);
-      const totalEarning = parseFloat(totalEarningInfo.total_earning) + (historyData.profit>0 ?parseFloat(historyData.profit):0);
+      console.log("total_earnning  ",totalEarningInfo.total_earning.real);
+      const totalEarning = parseFloat(totalEarningInfo.total_earning.real) + (historyData.profit>0 ?parseFloat(historyData.profit):0);
       console.log("total_earning",totalEarning)
       let rankingIndex = 0;
       if(totalEarning<100) rankingIndex = 0;
@@ -53,11 +64,27 @@ async function writeStatistics (isReal, userName, historyData) {
       db.collection('users').updateOne(
         { user_name: userName },
         { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': parseFloat(historyData.profit)}, 
-        $set: {'total_earning' : parseFloat(totalEarning.toFixed(2)), 'ranking' :RANKING_DATA[rankingIndex] } })
+        $set: {'total_earning.real' : parseFloat(totalEarning.toFixed(2)), 'ranking.real' :RANKING_DATA[rankingIndex] } })
     } else {
+      const totalEarningInfo = await db.collection('users').findOne({user_name:userName},{_id : 0, total_earning:1})  ;
+      console.log("total_earnning  ",totalEarningInfo.total_earning.virtual);
+      const totalEarning = parseFloat(totalEarningInfo.total_earning.virtual) + (historyData.profit>0 ?parseFloat(historyData.profit):0);
+      console.log("total_earning",totalEarning)
+      let rankingIndex = 0;
+      if(totalEarning<100) rankingIndex = 0;
+      if(totalEarning>=100 && totalEarning < 500) rankingIndex = 1;
+      if(totalEarning>=500 && totalEarning < 1000) rankingIndex = 2;
+      if(totalEarning>=1000 && totalEarning < 5000) rankingIndex = 3;
+      if(totalEarning>=5000 && totalEarning < 10000) rankingIndex = 4;
+      if(totalEarning>=10000 && totalEarning < 50000) rankingIndex = 5;
+      if(totalEarning>=50000 && totalEarning < 100000) rankingIndex = 6;
+      if(totalEarning>=100000 && totalEarning < 500000) rankingIndex = 7;
+      if(totalEarning>=500000 && totalEarning < 1000000) rankingIndex = 8;
+      if(totalEarning>=1000000) rankingIndex = 9;
       db.collection('users').updateOne(
         { user_name: userName },
-        { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': parseFloat(historyData.profit) } })
+        { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': parseFloat(historyData.profit)}, 
+        $set: {'total_earning.virtual' : parseFloat(totalEarning.toFixed(2)), 'ranking.virtual' :RANKING_DATA[rankingIndex] } })
     }
   }
 }
@@ -120,7 +147,7 @@ export  function startGame (connection, data, setStopFlag) {
       },[])
       connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
       writeStatistics(data.isReal, data.userName, historyData)
-      writeTask(data.userName, performTask)
+      writeTask(data.userName, performTask, data.isReal)
       
     }, time)
       
