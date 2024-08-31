@@ -10,8 +10,6 @@ import cors from "cors"
 
 app.use(cors({
   origin: '*', // Allow this origin
-  methods: ['GET', 'POST'], // Specify allowed methods
-  credentials: true // If you need to send cookies or authorization headers
 }));
 const { MongoClient, ObjectId } = pkg
 const {connectionString, connectionString1} = secretpkg;
