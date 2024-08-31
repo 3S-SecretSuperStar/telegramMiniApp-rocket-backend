@@ -93,10 +93,11 @@ function nonNullRandom () {
   return Math.random() || nonNullRandom()
 }
 
-export  function startGame (connection, data, setStopFlag) {
+export  function startGame (connection, data, setStopFlag, isReal) {
+  console.log(data)
   let result = (1 / nonNullRandom()).toFixed(2)
   let performTask = []
-  if (data.isReal) {
+  if (isReal) {
     result = parseFloat(1+(result-1)*0.9).toFixed(2)
   }
   result = result > MAX_WIN ? MAX_WIN : result
@@ -119,15 +120,16 @@ export  function startGame (connection, data, setStopFlag) {
         profit: -data.bet
       }
       connection.sendUTF(JSON.stringify({ operation: 'crashed', ...historyData }))
-      writeStatistics(data.isReal, data.userName, historyData)
+      writeStatistics(isReal, data.userName, historyData)
     }, time)
     
   } else {
     const time = parseFloat(Math.sqrt((autoStop-1) / ACCELERATION * 2).toFixed(0))
-    continueCounter = 0;
+    continueCounter += 1;
     timeout = setTimeout(() => {
-
+      
       setStopFlag()
+      
       const historyData = {
         date: formatedDate(),
         crash: 'x',
@@ -135,8 +137,18 @@ export  function startGame (connection, data, setStopFlag) {
         stop: autoStop,
         profit: (data.bet * (autoStop - 1)).toFixed(2)
       }
+      performTask = []
+      performTask = TASK_LIST.reduce((performList, task,index)=>{
+
+      if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
+        performList.push(index);
+      if(task.method === TASK_TYPE[1] && task.limit === continueCounter) 
+        performList.push(index);
+
+      return performList
+      },[])
       connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
-      writeStatistics(data.isReal, data.userName, historyData)
+      writeStatistics(isReal, data.userName, historyData)
       writeTask(data.userName, performTask, data.isReal)
       
     }, time)

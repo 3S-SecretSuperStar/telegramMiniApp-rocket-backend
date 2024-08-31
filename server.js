@@ -70,7 +70,7 @@ wsServer.on('request', request => {
         bet = data.bet
         isReal = data.isReal
         userName = data.userName
-        startTime = startGame(connection, data, setStopFlag)
+        startTime = startGame(connection, data, setStopFlag,isReal)
       } else if (data.operation === 'stop' && isGameRunning) {
         isGameRunning = false
         stopGame(connection, startTime, bet, isReal,userName)
