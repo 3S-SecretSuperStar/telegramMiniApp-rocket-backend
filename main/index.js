@@ -4,8 +4,9 @@ import logger from 'morgan'
 import path from 'path'
 import router from '../router/index.js'
 import { fileURLToPath } from 'url';
-
+import cors from 'cors'
 var app = express()
+app.use(cors())
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // view engine setup
