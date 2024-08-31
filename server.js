@@ -9,6 +9,10 @@ import { startGame, stopGame } from './game/index.js'
 import cors from "cors"
 
 app.use(cors())
+app.post("/...", (req, res) =>{
+  res.set('Access-Control-Allow-Origin', '*');
+//whatever you want here
+})
 const { MongoClient, ObjectId } = pkg
 const {connectionString, connectionString1} = secretpkg;
 /**
