@@ -99,7 +99,7 @@ export async function endSession (userName) {
  * @param {Object} req Request object
  * @returns {Object} User info and session key
  */
-export async function register (userName,realName) {
+export async function register (userName,realName,avatarUrl) {
   validateName(realName)
   const isUnique = await isNameUnique(userName)
   console.log("unique:", isUnique);
@@ -144,8 +144,8 @@ export async function register (userName,realName) {
           },
       } ,
       friend : "",
-      first_state : true
-   
+      first_state : true,
+      avatar_url :avatarUrl
     })
   }
     
@@ -175,7 +175,7 @@ export async function taskPerform(req){
  * Get info for profile pages
  */
 export async function usersInfo (req) {
-  await register(req.body.userName,req.body.realName)
+  await register(req.body.userName,req.body.realName,req.body.userAvatarUrl)
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
   const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1 }).toArray()
   return {
@@ -209,7 +209,7 @@ export async function gameHistory (req) {
   if (realHistory.length > req.body.historySize) {
     realHistory = realHistory.slice(realHistory.length - req.body.historySize)
   } else realHistory = data.gamesHistory.real
-  if (realHistory.length > req.body.historySize) {
+  if (virtualHistory.length > req.body.historySize) {
     virtualHistory = virtualHistory.slice(virtualHistory.length - req.body.historySize)
   } else virtualHistory = data.gamesHistory.virtual
   
