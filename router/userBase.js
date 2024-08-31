@@ -378,7 +378,7 @@ export async function getWithdraws (req) {
 
 export async function taskBalance (req){
   const data = req.body;
-  if(data.real)
+  if(data.isReal)
    await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.real' : parseFloat(data.amount), 'total_earning.real' : parseFloat(data.amount)}, $push : {'task.real.done_task':data.task}});
   else
    await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.virtual' : parseFloat(data.amount), 'total_earning.virtual' : parseFloat(data.amount)}, $push : {'task.virtual.done_task':data.task}});
