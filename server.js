@@ -9,7 +9,7 @@ import { startGame, stopGame } from './game/index.js'
 import cors from "cors"
 
 app.use(cors({
-  origin: 'https://miniapprocketgame.onrender.com', // Allow this origin
+  origin: '*', // Allow this origin
   methods: ['GET', 'POST'], // Specify allowed methods
   credentials: true // If you need to send cookies or authorization headers
 }));
