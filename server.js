@@ -9,7 +9,7 @@ import { startGame, stopGame } from './game/index.js'
 import cors from "cors"
 
 app.use(cors({
-  origin: 'https://telegramminiapp-rocket-backend-lbyg.onrender.com', // Allow this origin
+  origin: 'https://miniapprocketgame.onrender.com', // Allow this origin
   methods: ['GET', 'POST'], // Specify allowed methods
   credentials: true // If you need to send cookies or authorization headers
 }));
