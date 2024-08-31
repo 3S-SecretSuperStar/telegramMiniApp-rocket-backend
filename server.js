@@ -42,9 +42,6 @@ async function checkBalance (userName, bet, isReal) {
   
   console.log("balance: ",balance," bet: ",bet)
 
-  if (balance < bet) {
-    throw new Error('insufficient_funds')
-  }
 }
 
 wsServer.on('request', request => {
@@ -65,7 +62,7 @@ wsServer.on('request', request => {
         checkBalance(data.userName, data.bet, data.isReal)
       }
       if (data.bet < 1) {
-        throw new Error('Small bet')
+        console.log("small bet")
       }
 
       if (data.operation === 'start' && !isGameRunning) {

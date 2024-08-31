@@ -158,16 +158,7 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
     stop: (result + 1).toFixed(2),
     profit: (bet * result).toFixed(2)
   }
-  performTask = []
-  performTask = TASK_LIST.reduce((performList, task,index)=>{
-    
-  if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
-    performList.push(index);
-  if(task.method === TASK_TYPE[1] && task.limit === continueCounter) 
-    performList.push(index);
   
-  return performList
-  },[])
   console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
   writeStatistics(isReal, userName, historyData)
