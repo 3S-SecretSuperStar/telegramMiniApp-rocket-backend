@@ -177,7 +177,7 @@ export async function taskPerform(req){
 export async function usersInfo (req) {
   await register(req.body.userName,req.body.realName,req.body.userAvatarUrl)
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
-  const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1 }).toArray()
+  const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1, avatar_url: 1 }).toArray()
   return {
     allUsersData: data.map(i => {
       // i.btc.wallet.publicAddress = cipher.decrypt(i.btc.wallet.publicAddress)
