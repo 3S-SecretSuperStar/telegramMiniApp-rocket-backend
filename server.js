@@ -6,11 +6,8 @@ import { db, setDb } from './utils/globals.js'
 import pkg from 'mongodb'
 import { server as WebSocketServer } from 'websocket'
 import { startGame, stopGame } from './game/index.js'
-import cors from "cors"
 
-app.use(cors({
-  origin: '*', // Allow this origin
-}));
+
 const { MongoClient, ObjectId } = pkg
 const {connectionString, connectionString1} = secretpkg;
 /**
