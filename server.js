@@ -8,11 +8,11 @@ import { server as WebSocketServer } from 'websocket'
 import { startGame, stopGame } from './game/index.js'
 import cors from "cors"
 
-app.use(cors())
-app.post("/...", (req, res) =>{
-  res.set('Access-Control-Allow-Origin', '*');
-//whatever you want here
-})
+app.use(cors({
+  origin: 'https://telegramminiapp-rocket-backend-lbyg.onrender.com', // Allow this origin
+  methods: ['GET', 'POST'], // Specify allowed methods
+  credentials: true // If you need to send cookies or authorization headers
+}));
 const { MongoClient, ObjectId } = pkg
 const {connectionString, connectionString1} = secretpkg;
 /**
