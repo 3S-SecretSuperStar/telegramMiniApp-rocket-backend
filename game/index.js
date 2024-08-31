@@ -124,10 +124,10 @@ export  function startGame (connection, data, setStopFlag) {
     
   } else {
     const time = parseFloat(Math.sqrt((autoStop-1) / ACCELERATION * 2).toFixed(0))
+    continueCounter += 1;
     timeout = setTimeout(() => {
 
       setStopFlag()
-      continueCounter += 1;
       const historyData = {
         date: formatedDate(),
         crash: 'x',
@@ -161,7 +161,16 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
   clearTimeout(timeout)
   const time = Date.now() - startTime
   const result = ACCELERATION * time * time / 2
- 
+  performTask = []
+  performTask = TASK_LIST.reduce((performList, task,index)=>{
+    
+  if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
+    performList.push(index);
+  if(task.method === TASK_TYPE[1] && task.limit === continueCounter) 
+    performList.push(index);
+  
+  return performList
+  },[])
   const historyData = {
     date: formatedDate(),
     crash: 'x',
