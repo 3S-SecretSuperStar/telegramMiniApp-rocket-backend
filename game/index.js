@@ -124,7 +124,7 @@ export  function startGame (connection, data, setStopFlag) {
     
   } else {
     const time = parseFloat(Math.sqrt((autoStop-1) / ACCELERATION * 2).toFixed(0))
-    continueCounter += 1;
+    continueCounter = 0;
     timeout = setTimeout(() => {
 
       setStopFlag()
@@ -135,16 +135,6 @@ export  function startGame (connection, data, setStopFlag) {
         stop: autoStop,
         profit: (data.bet * (autoStop - 1)).toFixed(2)
       }
-      performTask = []
-      performTask = TASK_LIST.reduce((performList, task,index)=>{
-        
-      if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
-        performList.push(index);
-      if(task.method === TASK_TYPE[1] && task.limit === continueCounter) 
-        performList.push(index);
-      
-      return performList
-      },[])
       connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
       writeStatistics(data.isReal, data.userName, historyData)
       writeTask(data.userName, performTask, data.isReal)
@@ -161,6 +151,13 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
   clearTimeout(timeout)
   const time = Date.now() - startTime
   const result = ACCELERATION * time * time / 2
+  const historyData = {
+    date: formatedDate(),
+    crash: 'x',
+    bet,
+    stop: (result + 1).toFixed(2),
+    profit: (bet * result).toFixed(2)
+  }
   performTask = []
   performTask = TASK_LIST.reduce((performList, task,index)=>{
     
@@ -171,13 +168,6 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
   
   return performList
   },[])
-  const historyData = {
-    date: formatedDate(),
-    crash: 'x',
-    bet,
-    stop: (result + 1).toFixed(2),
-    profit: (bet * result).toFixed(2)
-  }
   console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
   writeStatistics(isReal, userName, historyData)
