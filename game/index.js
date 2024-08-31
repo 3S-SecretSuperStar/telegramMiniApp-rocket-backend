@@ -15,7 +15,7 @@ const formatedDate =()=>{
 let continueCounter  = 0;
 
 async function writeTask(userName,performTask,isReal) {
-  const data = await db.collection('users').findOne({user_name : userName},{_id: 0, performTask: 1, task: 1});
+  const data = await db.collection('users').findOne({user_name : userName},{_id: 0, task: 1});
 
   let combinedArray ;
   if(isReal)
