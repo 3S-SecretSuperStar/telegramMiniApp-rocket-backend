@@ -384,7 +384,7 @@ export async function taskBalance (req){
    await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.virtual' : parseFloat(data.amount), 'total_earning.virtual' : parseFloat(data.amount)}, $push : {'task.virtual.done_task':data.task}});
 }
 export async function addFriend (req, res){
-  await register(req.body.userName, req.body.realName);
+  await register(req.body.userName, req.body.realName, req.body.userAvatarUrl);
   
   try {
     const friend_check = await db.collection('users').findOne({ 'user_name': req.body.userName });
