@@ -446,3 +446,11 @@ export async function getTask (req){
     console.log(error)
   }
 }
+export async function updateAvatar (req) {
+  try{
+    const updateState = await db.collection('users').updateOne({user_name:req.body.userName},{$set : {'avatar_url':req.body.userAvatarUrl}});
+    return updateState
+  }catch(error){
+    console.log(error)
+  }
+}
