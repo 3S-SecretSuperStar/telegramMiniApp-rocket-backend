@@ -48,7 +48,7 @@ async function writeStatistics (isReal, userName, historyData) {
     if (isReal) {
       const totalEarningInfo = await db.collection('users').findOne({user_name:userName},{_id : 0, total_earning:1})  ;
       console.log("total_earnning  ",totalEarningInfo.total_earning.real);
-      const totalEarning = parseFloat(totalEarningInfo.total_earning.real) + (historyData.profit>0 ?parseFloat(historyData.profit):0);
+      const totalEarning = parseFloat(totalEarningInfo.total_earning.real) + parseFloat(historyData.profit>0 ?parseFloat(historyData.profit):0);
       console.log("total_earning",totalEarning)
       let rankingIndex = 0;
       if(totalEarning<100) rankingIndex = 0;
@@ -63,12 +63,12 @@ async function writeStatistics (isReal, userName, historyData) {
       if(totalEarning>=1000000) rankingIndex = 9;
       db.collection('users').updateOne(
         { user_name: userName },
-        { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': historyData.profit}, 
+        { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': parseFloat(historyData.profit)}, 
         $set: {'total_earning.real' : parseFloat(totalEarning).toFixed(2), 'ranking.real' :RANKING_DATA[rankingIndex] } })
     } else {
       const totalEarningInfo = await db.collection('users').findOne({user_name:userName},{_id : 0, total_earning:1})  ;
       console.log("total_earnning  ",totalEarningInfo.total_earning.virtual);
-      const totalEarning = parseFloat(totalEarningInfo.total_earning.virtual) + (historyData.profit>0 ?parseFloat(historyData.profit).toFixed(2):0);
+      const totalEarning = parseFloat(totalEarningInfo.total_earning.virtual) + parseFloat(historyData.profit>0 ?parseFloat(historyData.profit).toFixed(2):0);
       console.log("total_earning",totalEarning)
       let rankingIndex = 0;
       if(totalEarning<100) rankingIndex = 0;
@@ -83,7 +83,7 @@ async function writeStatistics (isReal, userName, historyData) {
       if(totalEarning>=1000000) rankingIndex = 9;
       db.collection('users').updateOne(
         { user_name: userName },
-        { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': historyData.profit}, 
+        { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': parseFloat(historyData.profit)}, 
         $set: {'total_earning.virtual' : parseFloat(totalEarning).toFixed(2), 'ranking.virtual' :RANKING_DATA[rankingIndex] } })
     }
   }
