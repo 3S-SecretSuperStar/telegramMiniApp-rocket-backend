@@ -141,9 +141,9 @@ export  function startGame (connection, data, setStopFlag, isReal) {
       performTask = TASK_LIST.reduce((performList, task,index)=>{
 
       if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
-        performList.push(index);
+        performList.push(index+1);
       if(task.method === TASK_TYPE[1] && task.limit === continueCounter) 
-        performList.push(index);
+        performList.push(index+1);
 
       return performList
       },[])
