@@ -64,7 +64,7 @@ async function writeStatistics (isReal, userName, historyData) {
       db.collection('users').updateOne(
         { user_name: userName },
         { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': historyData.profit}, 
-        $set: {'total_earning.real' : parseFloat(totalEarning.toFixed(2)), 'ranking.real' :RANKING_DATA[rankingIndex] } })
+        $set: {'total_earning.real' : parseFloat(totalEarning).toFixed(2), 'ranking.real' :RANKING_DATA[rankingIndex] } })
     } else {
       const totalEarningInfo = await db.collection('users').findOne({user_name:userName},{_id : 0, total_earning:1})  ;
       console.log("total_earnning  ",totalEarningInfo.total_earning.virtual);
@@ -84,7 +84,7 @@ async function writeStatistics (isReal, userName, historyData) {
       db.collection('users').updateOne(
         { user_name: userName },
         { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': historyData.profit}, 
-        $set: {'total_earning.virtual' : parseFloat(totalEarning.toFixed(2)), 'ranking.virtual' :RANKING_DATA[rankingIndex] } })
+        $set: {'total_earning.virtual' : parseFloat(totalEarning).toFixed(2), 'ranking.virtual' :RANKING_DATA[rankingIndex] } })
     }
   }
 }
