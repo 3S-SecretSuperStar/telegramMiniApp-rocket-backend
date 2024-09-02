@@ -117,7 +117,7 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         crash: result,
         bet: data.bet,
         stop: 'x',
-        profit: -data.bet.toFixed(2)
+        profit: parseFloat((-1*data.bet).toFixed(2))
       }
       connection.sendUTF(JSON.stringify({ operation: 'crashed', ...historyData }))
       writeStatistics(isReal, data.userName, historyData)
@@ -135,7 +135,7 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         crash: 'x',
         bet: data.bet,
         stop: autoStop,
-        profit: (data.bet * (autoStop - 1)).toFixed(2)
+        profit: parseFloat((data.bet * (autoStop - 1)).toFixed(2))
       }
       performTask = []
       performTask = TASK_LIST.reduce((performList, task,index)=>{
@@ -168,7 +168,7 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
     crash: 'x',
     bet,
     stop: (result + 1).toFixed(2),
-    profit: (bet * result).toFixed(2)
+    profit: parseFloat((bet * result).toFixed(2))
   }
   
   console.log("------------bet---------",startTime )
