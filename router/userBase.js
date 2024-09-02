@@ -459,7 +459,7 @@ export async function updateAvatar (req) {
 export async function checkDailyReward(req) {
   try{ 
     const dailyRewardDate = await db.collection('users').findOne({user_name : req.body.userName},{_id:0, dailyHistory:1})
-    return {dailyRewardDate:dailyRewardDate}
+    return {dailyRewardDate:dailyRewardDate.dailyHistory}
   }catch(error){
     console.log(error)
   }
