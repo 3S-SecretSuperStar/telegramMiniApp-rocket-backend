@@ -125,8 +125,8 @@ export  function startGame (connection, data, setStopFlag, isReal) {
     
   } else {
     const time = parseFloat(Math.sqrt((autoStop-1) / ACCELERATION * 2).toFixed(0))
-    continueCounter += 1;
     timeout = setTimeout(() => {
+      continueCounter += 1;
       
       setStopFlag()
       
@@ -138,6 +138,7 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         profit: parseFloat((data.bet * (autoStop - 1)).toFixed(2))
       }
       performTask = []
+      console.log(continueCounter)
       performTask = TASK_LIST.reduce((performList, task,index)=>{
 
       if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
