@@ -63,7 +63,7 @@ async function writeStatistics (isReal, userName, historyData) {
       if(totalEarning>=1000000) rankingIndex = 9;
       db.collection('users').updateOne(
         { user_name: userName },
-        { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': parseFloat(historyData.profit).toFixed(2)}, 
+        { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': historyData.profit}, 
         $set: {'total_earning.real' : parseFloat(totalEarning.toFixed(2)), 'ranking.real' :RANKING_DATA[rankingIndex] } })
     } else {
       const totalEarningInfo = await db.collection('users').findOne({user_name:userName},{_id : 0, total_earning:1})  ;
@@ -83,7 +83,7 @@ async function writeStatistics (isReal, userName, historyData) {
       if(totalEarning>=1000000) rankingIndex = 9;
       db.collection('users').updateOne(
         { user_name: userName },
-        { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': parseFloat(historyData.profit).toFixed(2)}, 
+        { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': historyData.profit}, 
         $set: {'total_earning.virtual' : parseFloat(totalEarning.toFixed(2)), 'ranking.virtual' :RANKING_DATA[rankingIndex] } })
     }
   }
@@ -117,7 +117,7 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         crash: result,
         bet: data.bet,
         stop: 'x',
-        profit: parseFloat(-data.bet).toFixed(2)
+        profit: -data.bet.toFixed(2)
       }
       connection.sendUTF(JSON.stringify({ operation: 'crashed', ...historyData }))
       writeStatistics(isReal, data.userName, historyData)
