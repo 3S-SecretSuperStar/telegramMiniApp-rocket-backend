@@ -63,12 +63,12 @@ async function writeStatistics (isReal, userName, historyData) {
       if(totalEarning>=1000000) rankingIndex = 9;
       db.collection('users').updateOne(
         { user_name: userName },
-        { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': parseFloat(historyData.profit)}, 
+        { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': parseFloat(historyData.profit).toFixed(2)}, 
         $set: {'total_earning.real' : parseFloat(totalEarning.toFixed(2)), 'ranking.real' :RANKING_DATA[rankingIndex] } })
     } else {
       const totalEarningInfo = await db.collection('users').findOne({user_name:userName},{_id : 0, total_earning:1})  ;
       console.log("total_earnning  ",totalEarningInfo.total_earning.virtual);
-      const totalEarning = parseFloat(totalEarningInfo.total_earning.virtual) + (historyData.profit>0 ?parseFloat(historyData.profit):0);
+      const totalEarning = parseFloat(totalEarningInfo.total_earning.virtual) + (historyData.profit>0 ?parseFloat(historyData.profit).toFixed(2):0);
       console.log("total_earning",totalEarning)
       let rankingIndex = 0;
       if(totalEarning<100) rankingIndex = 0;
@@ -83,7 +83,7 @@ async function writeStatistics (isReal, userName, historyData) {
       if(totalEarning>=1000000) rankingIndex = 9;
       db.collection('users').updateOne(
         { user_name: userName },
-        { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': parseFloat(historyData.profit)}, 
+        { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': parseFloat(historyData.profit).toFixed(2)}, 
         $set: {'total_earning.virtual' : parseFloat(totalEarning.toFixed(2)), 'ranking.virtual' :RANKING_DATA[rankingIndex] } })
     }
   }
@@ -117,7 +117,7 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         crash: result,
         bet: data.bet,
         stop: 'x',
-        profit: -data.bet
+        profit: parseFloat(-data.bet).toFixed(2)
       }
       connection.sendUTF(JSON.stringify({ operation: 'crashed', ...historyData }))
       writeStatistics(isReal, data.userName, historyData)
