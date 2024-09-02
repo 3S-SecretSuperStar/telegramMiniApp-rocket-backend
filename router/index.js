@@ -45,7 +45,9 @@ const postRequests = [
   ['get_friend', userBase.getFriend],
   ['check_first',userBase.checkFirst],
   ['get_task',userBase.getTask],
-  ['update_avatar',userBase.updateAvatar]
+  ['update_avatar',userBase.updateAvatar],
+  ['check_dailyReward',userBase.checkDailyReward],
+  ['perform_dailyReward',userBase.performDailyReward]
 
 ]
 
