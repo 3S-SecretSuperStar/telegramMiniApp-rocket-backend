@@ -4,6 +4,7 @@ import { generateWallet, getBtcBalance } from '../blockchain/btc.js'
 import pkg from 'mongodb'
 import * as bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
+import moment from 'moment'
 
 const { ObjectId } = pkg;
 
@@ -145,7 +146,8 @@ export async function register (userName,realName,avatarUrl) {
       } ,
       friend : "",
       first_state : true,
-      avatar_url :avatarUrl
+      avatar_url : avatarUrl,
+      dailyHistory : "" 
     })
   }
     
@@ -450,6 +452,22 @@ export async function updateAvatar (req) {
   try{
     const updateState = await db.collection('users').updateOne({user_name:req.body.userName},{$set : {'avatar_url':req.body.userAvatarUrl}});
     return updateState
+  }catch(error){
+    console.log(error)
+  }
+}
+export async function checkDailyReward(req) {
+  try{ 
+    const dailyRewardDate = await db.collection('users').findOne({user_name : req.body.userName},{_id:0, dailyHistory:1})
+    return {dailyRewardDate:dailyRewardDate}
+  }catch(error){
+    console.log(error)
+  }
+}
+export async function performDailyReward(req) {
+  try{
+    const currentDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+    const performDailyReward = await db.collection('users').updateOne({user_name:req.body.userName},{$set:{'dailyHistory':currentDate},$inc:{'balance.real':10,'balance.virtual':10}})
   }catch(error){
     console.log(error)
   }
