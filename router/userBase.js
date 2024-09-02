@@ -100,7 +100,7 @@ export async function endSession (userName) {
  * @param {Object} req Request object
  * @returns {Object} User info and session key
  */
-export async function register (userName,realName,avatarUrl) {
+export async function register (userName,realName,avatarUrl,friend) {
   validateName(realName)
   const isUnique = await isNameUnique(userName)
   console.log("unique:", isUnique);
@@ -144,7 +144,7 @@ export async function register (userName,realName,avatarUrl) {
             done_task : []
           },
       } ,
-      friend : "",
+      friend : friend,
       first_state : true,
       avatar_url : avatarUrl,
       dailyHistory : "" 
@@ -177,7 +177,7 @@ export async function taskPerform(req){
  * Get info for profile pages
  */
 export async function usersInfo (req) {
-  await register(req.body.userName,req.body.realName,req.body.userAvatarUrl)
+  await register(req.body.userName,req.body.realName,req.body.userAvatarUrl,"No friend")
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
   const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1, avatar_url: 1 }).toArray()
   return {
@@ -386,7 +386,7 @@ export async function taskBalance (req){
    await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.virtual' : parseFloat(data.amount), 'total_earning.virtual' : parseFloat(data.amount)}, $push : {'task.virtual.done_task':data.task}});
 }
 export async function addFriend (req, res){
-  await register(req.body.userName, req.body.realName, req.body.userAvatarUrl);
+  await register(req.body.userName, req.body.realName, req.body.userAvatarUrl,"");
   
   try {
     const friend_check = await db.collection('users').findOne({ 'user_name': req.body.userName });
