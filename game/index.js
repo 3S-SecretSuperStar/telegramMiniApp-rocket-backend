@@ -175,16 +175,18 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
     profit: parseFloat((bet * result).toFixed(2))
   }
   console.log("33333")
-  performTask = []
   if(continueCounter>5) continueCounter=1;
+  console.log("4444")
+  performTask = []
   console.log("continue Counter: not-full success: ",continueCounter)
       performTask = TASK_LIST.reduce((performList, task,index)=>{
-
+        console.log("455")
       if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
         performList.push(index+1);
+      console.log("4666")
       if(task.method === TASK_TYPE[1] && task.limit === continueCounter) 
         performList.push(index+1);
-
+      console.log("4777")
       return performList
       },[])
   console.log("------------bet---------",startTime )
