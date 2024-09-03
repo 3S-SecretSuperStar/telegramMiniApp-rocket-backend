@@ -5,6 +5,7 @@ import pkg from 'mongodb'
 
 let timeout
 const { ObjectId } = pkg
+let performTask=[]
 
 const formatedDate =()=>{ 
   const currentDate = moment.utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
@@ -96,7 +97,7 @@ function nonNullRandom () {
 export  function startGame (connection, data, setStopFlag, isReal) {
   console.log(data)
   let result = (1 / nonNullRandom()).toFixed(2)
-  let performTask = []
+  performTask = []
   if (isReal) {
     result = parseFloat(1+(result-1)*0.9).toFixed(2)
   }
