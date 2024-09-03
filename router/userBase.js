@@ -480,3 +480,34 @@ export async function performDailyReward(req) {
     console.log(error)
   }
 }
+export function addPerformList (req){
+  writeTask(req.body.userId,req.body.performTask, req.body.isReal)
+}
+async function writeTask(userId,performTask,isReal) {
+  const data = await db.collection('users').findOne({user_id : userId},{_id: 0, task: 1});
+
+  let combinedArray ;
+  if(isReal)
+    combinedArray = [...data.task.real.achieve_task, ...performTask];
+  else
+    combinedArray = [...data.task.virtual.achieve_task, ...performTask];
+
+  console.log(combinedArray)
+
+  // create a Set to track unique names
+  const uniqueNames = new Set();
+  const uniqueArray = combinedArray.filter((item)=>{
+    if(!uniqueNames.has(item)){
+      uniqueNames.add(item);
+      return true
+    }
+    return false;
+  })
+  console.log(uniqueArray)
+  if(isReal)
+    await db.collection('users').updateOne({user_id : userId}, {$set : {'task.real.achieve_task' : uniqueArray}});
+  else
+    await db.collection('users').updateOne({user_id : userId}, {$set : {'task.virtual.achieve_task' : uniqueArray}});
+
+
+}
