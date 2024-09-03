@@ -161,8 +161,10 @@ export  function startGame (connection, data, setStopFlag, isReal) {
 }
 
 export function stopGame (connection, startTime, bet, isReal, userName) {
+  console.log("11111")
   continueCounter += 1;
   clearTimeout(timeout)
+  console.log("22222")
   const time = Date.now() - startTime
   const result = ACCELERATION * time * time / 2
   const historyData = {
@@ -172,6 +174,7 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
     stop: (result + 1).toFixed(2),
     profit: parseFloat((bet * result).toFixed(2))
   }
+  console.log("33333")
   performTask = []
   if(continueCounter>5) continueCounter=1;
   console.log("continue Counter: not-full success: ",continueCounter)
@@ -187,4 +190,5 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
   console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
   writeStatistics(isReal, userName, historyData)
+  writeTask(userName, performTask, isReal)
 }
