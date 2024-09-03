@@ -14,8 +14,8 @@ const { ObjectId } = pkg;
  * @param {string} name Name provided during registration attempt
  * @throws {'name_occupied'} If the name is already taken
  */
-async function isNameUnique (userName) {
-  const result = await db.collection('users').findOne({ user_name: userName })
+async function isNameUnique (userId) {
+  const result = await db.collection('users').findOne({ user_id: userId })
   return result === null
 }
 
@@ -37,8 +37,8 @@ function validateName (name) {
  * @param {string} userName user_name
  * @returns {Object} User data
  */
-async function readData (userName) {
-  return await db.collection('users').findOne({ username: userName })
+async function readData (userId) {
+  return await db.collection('users').findOne({ userId: userId })
 }
 
 function generateRandomString (length) {
@@ -75,7 +75,7 @@ async function startSession (login) {
 export async function checkSession (userName, session) {
   validateSession(session)
 
-  const result = await db.collection('users').findOne({user_name: userName })
+  const result = await db.collection('users').findOne({user_name: userId })
   if (!result) {
     throw Error('name_incorrect')
   } else if (session !== result.session) {
@@ -88,10 +88,10 @@ export async function checkSession (userName, session) {
 /**
  * Ends a user session. Nullifies the current session key
  *
- * @param {string} userName User id
+ * @param {string} userId User id
  */
-export async function endSession (userName) {
-  await db.collection('users').updateOne({ user_name: userName }, { $set: { session: null } })
+export async function endSession (userId) {
+  await db.collection('users').updateOne({ user_name: userId }, { $set: { session: null } })
 }
 
 /**
@@ -100,13 +100,14 @@ export async function endSession (userName) {
  * @param {Object} req Request object
  * @returns {Object} User info and session key
  */
-export async function register (userName,realName,avatarUrl,friend) {
+export async function register (userId, userName,realName,avatarUrl,friend) {
   validateName(realName)
-  const isUnique = await isNameUnique(userName)
+  const isUnique = await isNameUnique(userId)
   console.log("unique:", isUnique);
   if(isUnique){
     await db.collection('users').insertOne({
       registrationDateTime: new Date(),
+      user_id: userId,
       user_name: userName,
       name: realName,
       guests: [],
@@ -168,7 +169,7 @@ export function logVisitor (req) {
 } 
 
 export async function taskPerform(req){
-  const data = await db.collection('users').findOne({user_name : req.body.userName},{_id: 0, task: 1});
+  const data = await db.collection('users').findOne({user_id : req.body.userId},{_id: 0, task: 1});
   console.log(data.task)
   return {task:data.task}
 }
@@ -177,9 +178,9 @@ export async function taskPerform(req){
  * Get info for profile pages
  */
 export async function usersInfo (req) {
-  await register(req.body.userName,req.body.realName,req.body.userAvatarUrl,"No friend")
+  await register(req.body.userId, req.body.userName,req.body.realName,req.body.userAvatarUrl,"No friend")
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
-  const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1, avatar_url: 1 }).toArray()
+  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1, avatar_url: 1 }).toArray()
   return {
     allUsersData: data.map(i => {
       // i.btc.wallet.publicAddress = cipher.decrypt(i.btc.wallet.publicAddress)
@@ -204,7 +205,7 @@ export async function usersInfo (req) {
 
 export async function gameHistory (req) {
   let realHistory = [{}], virtualHistory =[{}];
-  let data = await db.collection('users').findOne({user_name: req.body.userName}, { _id: 0,  gamesHistory: 1, })
+  let data = await db.collection('users').findOne({user_id: req.body.userId}, { _id: 0,  gamesHistory: 1, })
 
   realHistory = data.gamesHistory.real;
   virtualHistory = data.gamesHistory.virtual;
@@ -220,8 +221,8 @@ export async function gameHistory (req) {
 
 
 export async function checkFirst (req) {
-  console.log(req.body.userName)
-  db.collection('users').updateOne({ user_name: req.body.userName }, { $set: { 'first_state': "false"} })
+  console.log(req.body.userId)
+  db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'first_state': "false"} })
 }
 
 /**
@@ -270,11 +271,11 @@ export async function checkDeposits (req) {
 
 function writeDepositDataToDB (i) {
   const amount = parseInt(((i.total_received - i.recieved - 1500) / 100).toFixed(0))
-  db.collection('users').updateOne({ user_name: i.userName }, { $inc: { 'btc.deposited': amount, 'balance.real': amount } })
-  db.collection('users').updateOne({ user_name: i.userName }, { $push: { 'btc.deposits': { id: generateRandomString(8), amount, date: new Date() } } })
+  db.collection('users').updateOne({ user_id: i.userId }, { $inc: { 'btc.deposited': amount, 'balance.real': amount } })
+  db.collection('users').updateOne({ user_id: i.userId }, { $push: { 'btc.deposits': { id: generateRandomString(8), amount, date: new Date() } } })
   if (i.inviter) {
-    db.collection('users').updateOne({ user_name: i.inviter }, { $inc: { 'balance.real': amount * 0.03 } })
-    db.collection('users').updateOne({ user_name: i.inviter  }, { $push: { 'btc.affilation': { date: new Date(), amount: amount * 0.03, name: i.name, email: i.email } } })
+    db.collection('users').updateOne({ user_id: i.inviter }, { $inc: { 'balance.real': amount * 0.03 } })
+    db.collection('users').updateOne({ user_id: i.inviter  }, { $push: { 'btc.affilation': { date: new Date(), amount: amount * 0.03, name: i.name, email: i.email } } })
   }
 }
 
@@ -306,7 +307,7 @@ export async function withdraw (req) {
       })
     })
 
-    db.collection('users').updateOne({ user_name: req.body.userName }, { $set: { 'btc.withdraws': { date: new Date(), amount: req.body.amount, address: req.body.publicAddress } } })
+    db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'btc.withdraws': { date: new Date(), amount: req.body.amount, address: req.body.publicAddress } } })
     return {
       date: new Date(),
       amount: req.body.amount,
@@ -381,15 +382,15 @@ export async function getWithdraws (req) {
 export async function taskBalance (req){
   const data = req.body;
   if(data.isReal)
-   await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.real' : parseFloat(data.amount), 'total_earning.real' : parseFloat(data.amount)}, $push : {'task.real.done_task':data.task}});
+   await db.collection('users').updateOne({user_id : data.userId},{$inc : {'balance.real' : parseFloat(data.amount), 'total_earning.real' : parseFloat(data.amount)}, $push : {'task.real.done_task':data.task}});
   else
-   await db.collection('users').updateOne({user_name : data.userName},{$inc : {'balance.virtual' : parseFloat(data.amount), 'total_earning.virtual' : parseFloat(data.amount)}, $push : {'task.virtual.done_task':data.task}});
+   await db.collection('users').updateOne({user_id : data.userId},{$inc : {'balance.virtual' : parseFloat(data.amount), 'total_earning.virtual' : parseFloat(data.amount)}, $push : {'task.virtual.done_task':data.task}});
 }
 export async function addFriend (req, res){
-  await register(req.body.userName, req.body.realName, req.body.userAvatarUrl,"");
+  await register(req.body.userId, req.body.userName, req.body.realName, req.body.userAvatarUrl,"");
   
   try {
-    const friend_check = await db.collection('users').findOne({ 'user_name': req.body.userName });
+    const friend_check = await db.collection('users').findOne({ 'user_id': req.body.userId });
    console.log("friend_check",friend_check)
     if (friend_check.friend !=="") {
       return res
@@ -401,23 +402,23 @@ export async function addFriend (req, res){
         .json({ msg: "You can't added myself" });
     } else{
       await db.collection('users').updateOne(
-        { user_name: req.body.userName },
+        { user_id: req.body.userId },
         { $set:{'friend' :req.body.friend }})
        if(req.body.real) 
        {
         await db.collection('users').updateOne( 
-          { user_name: req.body.userName},
+          { user_id: req.body.userId},
           { $inc: { 'balance.real': 25,'total_earning.real':25} })
         await db.collection('users').updateOne( 
-          { user_name: req.body.friend},
+          { user_id: req.body.friend},
           { $inc: { 'balance.real': 25,'total_earning.real':25} })
        }else
        {
         await db.collection('users').updateOne( 
-          { user_name: req.body.userName},
+          { user_id: req.body.userId},
           { $inc: { 'balance.virtual': 25,'total_earning.virtual':25} })
         await db.collection('users').updateOne( 
-          { user_name: req.body.friend},
+          { user_id: req.body.friend},
           { $inc: { 'balance.virtual': 25,'total_earning.virtual':25} })
        }
       
@@ -432,7 +433,7 @@ export async function getFriend (req, res){
   try {
    
 
-    const data = await db.collection('users').find({friend:req.body.userName}).project({ _id: 0, name: 1,   balance: 1,  ranking: 1, avatar_url: 1 }).toArray()
+    const data = await db.collection('users').find({friend:req.body.userId}).project({ _id: 0, name: 1,   balance: 1,  ranking: 1, avatar_url: 1 }).toArray()
 
     return {friendData: data}
   } catch (error) {
@@ -450,7 +451,7 @@ export async function getTask (req){
 }
 export async function updateAvatar (req) {
   try{
-    const updateState = await db.collection('users').updateOne({user_name:req.body.userName},{$set : {'avatar_url':req.body.userAvatarUrl}});
+    const updateState = await db.collection('users').updateOne({user_id:req.body.userId},{$set : {'avatar_url':req.body.userAvatarUrl}});
     return updateState
   }catch(error){
     console.log(error)
@@ -458,7 +459,7 @@ export async function updateAvatar (req) {
 }
 export async function checkDailyReward(req) {
   try{ 
-    const dailyRewardDate = await db.collection('users').findOne({user_name : req.body.userName},{_id:0, dailyHistory:1})
+    const dailyRewardDate = await db.collection('users').findOne({user_id : req.body.userId},{_id:0, dailyHistory:1})
     return {dailyRewardDate:dailyRewardDate.dailyHistory}
   }catch(error){
     console.log(error)
@@ -467,7 +468,7 @@ export async function checkDailyReward(req) {
 export async function performDailyReward(req) {
   try{
     const currentDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-    const performDailyReward = await db.collection('users').updateOne({user_name:req.body.userName},{$set:{'dailyHistory':currentDate},$inc:{'balance.real':10,'balance.virtual':10}})
+    const performDailyReward = await db.collection('users').updateOne({user_id:req.body.userId},{$set:{'dailyHistory':currentDate},$inc:{'balance.real':10,'balance.virtual':10}})
   }catch(error){
     console.log(error)
   }

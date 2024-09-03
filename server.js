@@ -35,8 +35,8 @@ const wsServer = new WebSocketServer({
   httpServer: server
 })
 
-async function checkBalance (userName, bet, isReal) {
-  let balance = (await db.collection('users').findOne({ user_name: userName }, { _id: 0, balance: 1 })).balance
+async function checkBalance (userId, bet, isReal) {
+  let balance = (await db.collection('users').findOne({ user_id: userId }, { _id: 0, balance: 1 })).balance
 
   balance = isReal ? balance.real : balance.virtual
   
@@ -50,7 +50,7 @@ wsServer.on('request', request => {
   let bet
   let startTime
   let isReal
-  let userName
+  let userId
   const setStopFlag = () => { isGameRunning = false }
 
   connection.on('message', message => {
@@ -58,8 +58,8 @@ wsServer.on('request', request => {
 
     try {
       
-      if (data.userName) {
-        checkBalance(data.userName, data.bet, data.isReal)
+      if (data.userId) {
+        checkBalance(data.userId, data.bet, data.isReal)
       }
       if (data.bet < 1) {
         console.log("small bet")
@@ -69,18 +69,18 @@ wsServer.on('request', request => {
         isGameRunning = true
         bet = data.bet
         isReal = data.isReal
-        userName = data.userName
+        userId = data.userId
         startTime = startGame(connection, data, setStopFlag,isReal)
       } else if (data.operation === 'stop' && isGameRunning) {
         isGameRunning = false
-        stopGame(connection, startTime, bet, isReal,userName)
+        stopGame(connection, startTime, bet, isReal,userId)
       } else if (data.operation === 'debug') {
         // eslint-disable-next-line no-eval
         connection.sendUTF(eval(data.debugParam))
       } else if (data.operation === 'get_free_bets') {
         const expiration = new Date().getTime() + 60 * 60 * 1000
         connection.sendUTF(JSON.stringify({ operation: 'free_bets', expiration }))
-        db.collection('users').updateOne({ user_name: userName }, { $set: { expiration }, $inc: { 'balance.virtual': 3 } })
+        db.collection('users').updateOne({ user_id: userId }, { $set: { expiration }, $inc: { 'balance.virtual': 3 } })
       }
     } catch (e) {
       // console.log(e)

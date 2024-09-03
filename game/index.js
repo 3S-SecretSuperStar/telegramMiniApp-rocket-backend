@@ -15,8 +15,8 @@ const formatedDate =()=>{
 
 let continueCounter  = 0;
 
-async function writeTask(userName,performTask,isReal) {
-  const data = await db.collection('users').findOne({user_name : userName},{_id: 0, task: 1});
+async function writeTask(userId,performTask,isReal) {
+  const data = await db.collection('users').findOne({user_id : userId},{_id: 0, task: 1});
 
   let combinedArray ;
   if(isReal)
@@ -37,17 +37,17 @@ async function writeTask(userName,performTask,isReal) {
   })
   console.log(uniqueArray)
   if(isReal)
-    await db.collection('users').updateOne({user_name : userName}, {$set : {'task.real.achieve_task' : uniqueArray}});
+    await db.collection('users').updateOne({user_id : userId}, {$set : {'task.real.achieve_task' : uniqueArray}});
   else
-    await db.collection('users').updateOne({user_name : userName}, {$set : {'task.virtual.achieve_task' : uniqueArray}});
+    await db.collection('users').updateOne({user_id : userId}, {$set : {'task.virtual.achieve_task' : uniqueArray}});
 
 
 }
 
-async function writeStatistics (isReal, userName, historyData) {
-  if (userName) {
+async function writeStatistics (isReal, userId, historyData) {
+  if (userId) {
     if (isReal) {
-      const totalEarningInfo = await db.collection('users').findOne({user_name:userName},{_id : 0, total_earning:1})  ;
+      const totalEarningInfo = await db.collection('users').findOne({user_id:userId},{_id : 0, total_earning:1})  ;
       console.log("total_earnning  ",totalEarningInfo.total_earning.real);
       const totalEarning = parseFloat(totalEarningInfo.total_earning.real) + parseFloat(historyData.profit>0 ?parseFloat(historyData.profit):0);
       console.log("total_earning",totalEarning)
@@ -63,11 +63,11 @@ async function writeStatistics (isReal, userName, historyData) {
       if(totalEarning>=500000 && totalEarning < 1000000) rankingIndex = 8;
       if(totalEarning>=1000000) rankingIndex = 9;
       db.collection('users').updateOne(
-        { user_name: userName },
+        { user_id: userId },
         { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': parseFloat(historyData.profit)}, 
         $set: {'total_earning.real' : parseFloat(totalEarning.toFixed(2)), 'ranking.real' :RANKING_DATA[rankingIndex] } })
     } else {
-      const totalEarningInfo = await db.collection('users').findOne({user_name:userName},{_id : 0, total_earning:1})  ;
+      const totalEarningInfo = await db.collection('users').findOne({user_id:userId},{_id : 0, total_earning:1})  ;
       console.log("total_earnning  ",totalEarningInfo.total_earning.virtual);
       const totalEarning = parseFloat(totalEarningInfo.total_earning.virtual) + parseFloat(historyData.profit>0 ?parseFloat(historyData.profit).toFixed(2):0);
       console.log("total_earning",totalEarning)
@@ -83,7 +83,7 @@ async function writeStatistics (isReal, userName, historyData) {
       if(totalEarning>=500000 && totalEarning < 1000000) rankingIndex = 8;
       if(totalEarning>=1000000) rankingIndex = 9;
       db.collection('users').updateOne(
-        { user_name: userName },
+        { user_id: userId },
         { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': parseFloat(historyData.profit)}, 
         $set: {'total_earning.virtual' : parseFloat(totalEarning.toFixed(2)), 'ranking.virtual' :RANKING_DATA[rankingIndex] } })
     }
@@ -121,7 +121,7 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         profit: parseFloat((-1*data.bet).toFixed(2))
       }
       connection.sendUTF(JSON.stringify({ operation: 'crashed', ...historyData }))
-      writeStatistics(isReal, data.userName, historyData)
+      writeStatistics(isReal, data.userId, historyData)
     }, time)
     
   } else {
@@ -151,8 +151,8 @@ export  function startGame (connection, data, setStopFlag, isReal) {
       return performList
       },[])
       connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
-      writeStatistics(isReal, data.userName, historyData)
-      writeTask(data.userName, performTask, data.isReal)
+      writeStatistics(isReal, data.userId, historyData)
+      writeTask(data.userId, performTask, data.isReal)
       
     }, time)
       
@@ -161,7 +161,7 @@ export  function startGame (connection, data, setStopFlag, isReal) {
   return Date.now()
 }
 
-export function stopGame (connection, startTime, bet, isReal, userName) {
+export function stopGame (connection, startTime, bet, isReal, userId) {
   console.log("11111")
   continueCounter += 1;
   clearTimeout(timeout)
@@ -192,6 +192,6 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
       },[])
   console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
-  writeStatistics(isReal, userName, historyData)
-  writeTask(userName, performTask, isReal)
+  writeStatistics(isReal, userId, historyData)
+  writeTask(userId, performTask, isReal)
 }
