@@ -5,6 +5,7 @@ import pkg from 'mongodb'
 import * as bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
 import moment from 'moment'
+import { TASK_LIST } from '../utils/globals.js'
 
 const { ObjectId } = pkg;
 
@@ -445,6 +446,7 @@ export async function getFriend (req, res){
 export async function getTask (req){
   try{
     const data = await db.collection('tasks').find({}).project({_id:0, src:1, title:1,amount:1}).toArray()
+    console.log("data task",data)
     return {
       task:{
         display: data.task,
