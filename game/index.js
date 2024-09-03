@@ -64,7 +64,7 @@ async function writeStatistics (isReal, userName, historyData) {
       db.collection('users').updateOne(
         { user_name: userName },
         { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': parseFloat(historyData.profit)}, 
-        $set: {'total_earning.real' : parseFloat(totalEarning).toFixed(2), 'ranking.real' :RANKING_DATA[rankingIndex] } })
+        $set: {'total_earning.real' : parseFloat(totalEarning.toFixed(2)), 'ranking.real' :RANKING_DATA[rankingIndex] } })
     } else {
       const totalEarningInfo = await db.collection('users').findOne({user_name:userName},{_id : 0, total_earning:1})  ;
       console.log("total_earnning  ",totalEarningInfo.total_earning.virtual);
@@ -84,7 +84,7 @@ async function writeStatistics (isReal, userName, historyData) {
       db.collection('users').updateOne(
         { user_name: userName },
         { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': parseFloat(historyData.profit)}, 
-        $set: {'total_earning.virtual' : parseFloat(totalEarning).toFixed(2), 'ranking.virtual' :RANKING_DATA[rankingIndex] } })
+        $set: {'total_earning.virtual' : parseFloat(totalEarning.toFixed(2)), 'ranking.virtual' :RANKING_DATA[rankingIndex] } })
     }
   }
 }
@@ -171,7 +171,17 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
     stop: (result + 1).toFixed(2),
     profit: parseFloat((bet * result).toFixed(2))
   }
-  
+  performTask = []
+      console.log(continueCounter)
+      performTask = TASK_LIST.reduce((performList, task,index)=>{
+
+      if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
+        performList.push(index+1);
+      if(task.method === TASK_TYPE[1] && task.limit === continueCounter) 
+        performList.push(index+1);
+
+      return performList
+      },[])
   console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
   writeStatistics(isReal, userName, historyData)
