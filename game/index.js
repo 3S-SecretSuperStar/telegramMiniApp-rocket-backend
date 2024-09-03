@@ -138,6 +138,7 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         profit: parseFloat((data.bet * (autoStop - 1)).toFixed(2))
       }
       performTask = []
+      if(continueCounter>5) continueCounter=1;
       console.log("continue Counter: full success: ",continueCounter)
       performTask = TASK_LIST.reduce((performList, task,index)=>{
 
@@ -172,6 +173,7 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
     profit: parseFloat((bet * result).toFixed(2))
   }
   performTask = []
+  if(continueCounter>5) continueCounter=1;
   console.log("continue Counter: not-full success: ",continueCounter)
       performTask = TASK_LIST.reduce((performList, task,index)=>{
 
