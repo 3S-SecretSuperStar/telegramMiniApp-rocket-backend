@@ -5,7 +5,6 @@ import pkg from 'mongodb'
 
 let timeout
 const { ObjectId } = pkg
-let performTask=[]
 
 const formatedDate =()=>{ 
   const currentDate = moment.utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
@@ -13,9 +12,7 @@ const formatedDate =()=>{
   return currentDate
 } ;
 
-let continueCounter  = 0;
-
-async function writeTask(userId,performTask,isReal) {
+export async function writeTask(userId,performTask,isReal) {
   const data = await db.collection('users').findOne({user_id : userId},{_id: 0, task: 1});
 
   let combinedArray ;
@@ -97,7 +94,6 @@ function nonNullRandom () {
 export  function startGame (connection, data, setStopFlag, isReal) {
   console.log(data)
   let result = (1 / nonNullRandom()).toFixed(2)
-  performTask = []
   if (isReal) {
     result = parseFloat(1+(result-1)*0.9).toFixed(2)
   }
@@ -110,7 +106,6 @@ export  function startGame (connection, data, setStopFlag, isReal) {
 
   if (result < autoStop) {
     const time = parseFloat(Math.sqrt((result-1) / ACCELERATION * 2).toFixed(2))
-    continueCounter = 0;
     timeout = setTimeout(() => {
       setStopFlag();
       const historyData = {
@@ -126,7 +121,6 @@ export  function startGame (connection, data, setStopFlag, isReal) {
     
   } else {
     const time = parseFloat(Math.sqrt((autoStop-1) / ACCELERATION * 2).toFixed(0))
-    continueCounter += 1;
     timeout = setTimeout(() => {
       
       setStopFlag()
@@ -138,22 +132,8 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         stop: autoStop,
         profit: parseFloat((data.bet * (autoStop - 1)).toFixed(2))
       }
-      performTask = []
-      if(continueCounter>5) continueCounter=1;
-      console.log("continue Counter: full success: ",continueCounter)
-      performTask = TASK_LIST.reduce((performList, task,index)=>{
-
-      if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
-        performList.push(index+1);
-      if(task.method === TASK_TYPE[1] && task.limit === continueCounter) 
-        performList.push(index+1);
-
-      return performList
-      },[])
       connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
-      writeStatistics(isReal, data.userId, historyData)
-      writeTask(data.userId, performTask, data.isReal)
-      
+      writeStatistics(isReal, data.userId, historyData)  
     }, time)
       
   }
@@ -163,7 +143,6 @@ export  function startGame (connection, data, setStopFlag, isReal) {
 
 export function stopGame (connection, startTime, bet, isReal, userId) {
   console.log("11111")
-  continueCounter += 1;
   clearTimeout(timeout)
   console.log("22222")
   const time = Date.now() - startTime
@@ -175,23 +154,7 @@ export function stopGame (connection, startTime, bet, isReal, userId) {
     stop: (result + 1).toFixed(2),
     profit: parseFloat((bet * result).toFixed(2))
   }
-  console.log("33333")
-  if(continueCounter>5) continueCounter=1;
-  console.log("4444")
-  performTask = []
-  console.log("continue Counter: not-full success: ",continueCounter)
-      performTask = TASK_LIST.reduce((performList, task,index)=>{
-        console.log("455")
-      // if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
-      //   performList.push(index+1);
-      console.log("4666")
-      if(task.method === TASK_TYPE[1] && task.limit === continueCounter) 
-        performList.push(index+1);
-      console.log("4777")
-      return performList
-      },[])
   console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
   writeStatistics(isReal, userId, historyData)
-  writeTask(userId, performTask, isReal)
 }

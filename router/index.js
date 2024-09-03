@@ -47,7 +47,8 @@ const postRequests = [
   ['get_task',userBase.getTask],
   ['update_avatar',userBase.updateAvatar],
   ['check_dailyReward',userBase.checkDailyReward],
-  ['perform_dailyReward',userBase.performDailyReward]
+  ['perform_dailyReward',userBase.performDailyReward],
+  ['add_perform_list', userBase.addPerformList ]
 
 ]
 
