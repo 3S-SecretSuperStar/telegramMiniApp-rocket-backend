@@ -431,9 +431,10 @@ export async function addFriend (req, res){
 };
 export async function getFriend (req, res){
   try {
-   
+    const userIdString = req.body.userId.toString()
+    console.log(userIdString)
 
-    const data = await db.collection('users').find({friend:req.body.userId}).project({ _id: 0, name: 1,   balance: 1,  ranking: 1, avatar_url: 1 }).toArray()
+    const data = await db.collection('users').find({friend:userIdString}).project({ _id: 0, name: 1,   balance: 1,  ranking: 1, avatar_url: 1 }).toArray()
 
     return {friendData: data}
   } catch (error) {
