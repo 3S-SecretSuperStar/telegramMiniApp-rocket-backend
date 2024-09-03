@@ -6,7 +6,6 @@ import * as bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
 import moment from 'moment'
 import { TASK_LIST } from '../utils/globals.js'
-import { writeTask } from '../game/index.js'
 
 const { ObjectId } = pkg;
 
