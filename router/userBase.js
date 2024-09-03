@@ -449,7 +449,7 @@ export async function getTask (req){
     console.log("data task",data)
     return {
       task:{
-        display: data.task,
+        display: data,
         content: TASK_LIST}
     }
   }catch(error){
