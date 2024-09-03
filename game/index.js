@@ -182,8 +182,8 @@ export function stopGame (connection, startTime, bet, isReal, userName) {
   console.log("continue Counter: not-full success: ",continueCounter)
       performTask = TASK_LIST.reduce((performList, task,index)=>{
         console.log("455")
-      if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
-        performList.push(index+1);
+      // if(autoStop>=task.limit && task.method === TASK_TYPE[0]) 
+      //   performList.push(index+1);
       console.log("4666")
       if(task.method === TASK_TYPE[1] && task.limit === continueCounter) 
         performList.push(index+1);
