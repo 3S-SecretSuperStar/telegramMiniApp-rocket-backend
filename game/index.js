@@ -121,8 +121,9 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         crash: 'x',
         bet: data.bet,
         stop: autoStop,
-        profit: parseFloat((data.bet * (autoStop)).toFixed(2))
+        profit: parseFloat((data.bet * autoStop).toFixed(2))
       }
+      console.log("success : bet",data.bet,"auto stop",autoStop, "profit",historyData.profit)
       connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
       writeStatistics(isReal, data.userId, historyData)  
       updateBalance(data.userId,historyData.profit, isReal);
