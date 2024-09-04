@@ -383,6 +383,7 @@ export async function getWithdraws (req) {
 
 export async function taskBalance (req){
   const data = req.body;
+  
   if(data.isReal)
    await db.collection('users').updateOne({user_id : data.userId},{$inc : {'balance.real' : parseFloat(data.amount), 'total_earning.real' : parseFloat(data.amount)}, $push : {'task.real.done_task':data.task}});
   else
@@ -436,7 +437,7 @@ export async function getFriend (req, res){
     const userIdString = req.body.userId.toString()
     console.log(userIdString)
 
-    const data = await db.collection('users').find({friend:userIdString}).project({ _id: 0, name: 1,   balance: 1,  ranking: 1, avatar_url: 1 }).toArray()
+    const data = await db.collection('users').find().project({ _id: 0, name: 1,   balance: 1,  ranking: 1, avatar_url: 1,friend: 1 }).toArray()
 
     return {friendData: data}
   } catch (error) {
