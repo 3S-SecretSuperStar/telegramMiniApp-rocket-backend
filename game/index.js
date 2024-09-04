@@ -33,7 +33,7 @@ async function writeStatistics (isReal, userId, historyData) {
       if(totalEarning>=1000000) rankingIndex = 9;
       db.collection('users').updateOne(
         { user_id: userId },
-        { $push: { 'gamesHistory.real': historyData }, $inc: { 'balance.real': parseFloat(historyData.profit)}, 
+        { $push: { 'gamesHistory.real': historyData }, 
         $set: {'total_earning.real' : parseFloat(totalEarning.toFixed(2)), 'ranking.real' :RANKING_DATA[rankingIndex] } })
     } else {
       const totalEarningInfo = await db.collection('users').findOne({user_id:userId},{_id : 0, total_earning:1})  ;
@@ -63,6 +63,21 @@ function nonNullRandom () {
   return Math.random() || nonNullRandom()
 }
 
+function updateBalance(userId, amount, isReal){
+  console.log("user Id",userId)
+  console.log("amount", amount)
+  console.log("isReal ",isReal)
+  if(isReal){
+    db.collection('users').updateOne(
+      { user_id: userId },
+      { $inc: { 'balance.real': parseFloat((amount).toFixed(2))}})
+  }else{
+    db.collection('users').updateOne(
+      { user_id: userId },
+      { $inc: { 'balance.virtual': parseFloat((amount).toFixed(2))}})
+  }
+}
+
 export  function startGame (connection, data, setStopFlag, isReal) {
   console.log(data)
   let result = (1 / nonNullRandom()).toFixed(2)
@@ -72,6 +87,10 @@ export  function startGame (connection, data, setStopFlag, isReal) {
   result = result > MAX_WIN ? MAX_WIN : result
 
   connection.sendUTF(JSON.stringify({ operation: 'started' }))
+
+  updateBalance(data.userId,-1 * data.bet, isReal);
+  
+
 
   const autoStop = parseFloat(data.autoStop)
   console.log(result," ",autoStop)
@@ -102,10 +121,11 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         crash: 'x',
         bet: data.bet,
         stop: autoStop,
-        profit: parseFloat((data.bet * (autoStop - 1)).toFixed(2))
+        profit: parseFloat((data.bet * (autoStop)).toFixed(2))
       }
       connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
       writeStatistics(isReal, data.userId, historyData)  
+      updateBalance(data.userId,historyData.profit, isReal);
     }, time)
       
   }
@@ -124,9 +144,10 @@ export function stopGame (connection, startTime, bet, isReal, userId) {
     crash: 'x',
     bet,
     stop: (result + 1).toFixed(2),
-    profit: parseFloat((bet * result).toFixed(2))
+    profit: parseFloat((bet * (result+1)).toFixed(2))
   }
   console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
   writeStatistics(isReal, userId, historyData)
+  updateBalance(data.userId,historyData.profit, isReal);
 }
