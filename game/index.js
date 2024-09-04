@@ -150,7 +150,9 @@ export function stopGame (connection, startTime, bet, isReal, userId) {
   }
   console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
-  updateBalance(data.userId,historyData.profit, isReal);
+  console.log("wwwwwww")
+  updateBalance(userId,historyData.profit, isReal);
+  console.log("wwwwwww")
   writeStatistics(isReal, userId, historyData)
   console.log(historyData.profit)
 }
