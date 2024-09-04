@@ -126,8 +126,8 @@ export  function startGame (connection, data, setStopFlag, isReal) {
       }
       console.log("success : bet",data.bet,"auto stop",autoStop, "profit",historyData.profit)
       connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
-      writeStatistics(isReal, data.userId, historyData)  
       updateBalance(data.userId,historyData.profit, isReal);
+      writeStatistics(isReal, data.userId, historyData)  
     }, time)
       
   }
@@ -150,6 +150,7 @@ export function stopGame (connection, startTime, bet, isReal, userId) {
   }
   console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
-  writeStatistics(isReal, userId, historyData)
   updateBalance(data.userId,historyData.profit, isReal);
+  writeStatistics(isReal, userId, historyData)
+  console.log(historyData.profit)
 }
