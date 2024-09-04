@@ -53,7 +53,7 @@ async function writeStatistics (isReal, userId, historyData) {
       if(totalEarning>=1000000) rankingIndex = 9;
       db.collection('users').updateOne(
         { user_id: userId },
-        { $push: { 'gamesHistory.virtual': historyData }, $inc: { 'balance.virtual': parseFloat(historyData.profit)}, 
+        { $push: { 'gamesHistory.virtual': historyData },
         $set: {'total_earning.virtual' : parseFloat(totalEarning.toFixed(2)), 'ranking.virtual' :RANKING_DATA[rankingIndex] } })
     }
   }
@@ -63,7 +63,7 @@ function nonNullRandom () {
   return Math.random() || nonNullRandom()
 }
 
-function updateBalance(userId, amount, isReal){
+async function updateBalance(userId, amount, isReal){
   console.log("user Id",userId)
   console.log("amount", amount)
   console.log("isReal ",isReal)
