@@ -447,12 +447,10 @@ export async function getFriend (req, res){
 
 export async function getTask (req){
   try{
-    const data = await db.collection('tasks').find({}).project({_id:0, src:1, title:1,amount:1}).toArray()
+    const data = await db.collection('task_list').find({}).project({_id:0, title:1, amount:1, type: 1, count: 1}).toArray()
     console.log("data task",data)
     return {
-      task:{
-        display: data,
-        content: TASK_LIST}
+      task: data
     }
   }catch(error){
     console.log(error)
