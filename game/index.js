@@ -122,7 +122,7 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         crash: 'x',
         bet: data.bet,
         stop: autoStop,
-        profit: parseFloat((data.bet * autoStop).toFixed(2))
+        profit: parseFloat((data.bet * (autoStop-1)).toFixed(2))
       }
       console.log("success : bet",data.bet,"auto stop",autoStop, "profit",historyData.profit)
       connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
@@ -146,7 +146,7 @@ export function stopGame (connection, startTime, bet, isReal, userId) {
     crash: 'x',
     bet,
     stop: (result + 1).toFixed(2),
-    profit: parseFloat((bet * (result+1)).toFixed(2))
+    profit: parseFloat((bet * result).toFixed(2))
   }
   console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
