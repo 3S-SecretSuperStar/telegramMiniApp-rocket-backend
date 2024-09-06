@@ -474,8 +474,10 @@ export async function checkDailyReward(req) {
 }
 export async function performDailyReward(req) {
   try{
+    console.log("performDailyReward ",req.body)
 
     const currentDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+
     const performDailyReward = await db.collection('users_test').updateOne({user_id:req.body.userId},{$set:{'dailyHistory':currentDate},
       $inc:{'balance.real':req.body.amount,'balance.virtual':req.body.amount,'consecutive_days':1}})
   }catch(error){
