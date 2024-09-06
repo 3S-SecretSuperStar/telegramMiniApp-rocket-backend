@@ -181,7 +181,7 @@ export async function taskPerform(req){
 export async function usersInfo (req) {
   await register(req.body.userId, req.body.userName,req.body.realName,req.body.userAvatarUrl,"No friend")
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
-  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1, avatar_url: 1,friend: 1 }).toArray()
+  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1, avatar_url: 1,friend:1 }).toArray()
  console.log("send data:",data)
   return {
     allUsersData: data.map(i => {
@@ -466,16 +466,18 @@ export async function updateAvatar (req) {
 }
 export async function checkDailyReward(req) {
   try{ 
-    const dailyRewardDate = await db.collection('users').findOne({user_id : req.body.userId},{_id:0, dailyHistory:1})
-    return {dailyRewardDate:dailyRewardDate.dailyHistory}
+    const dailyRewardInfo = await db.collection('users_test').findOne({user_id : req.body.userId},{_id:0, dailyHistory:1, consecutive_days:1})
+    return {dailyRewardInfo:{date: dailyRewardInfo.dailyHistory, consecutive_days : dailyRewardInfo.consecutive_days}}
   }catch(error){
     console.log(error)
   }
 }
 export async function performDailyReward(req) {
   try{
+
     const currentDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-    const performDailyReward = await db.collection('users').updateOne({user_id:req.body.userId},{$set:{'dailyHistory':currentDate},$inc:{'balance.real':10,'balance.virtual':10}})
+    const performDailyReward = await db.collection('users_test').updateOne({user_id:req.body.userId},{$set:{'dailyHistory':currentDate},
+      $inc:{'balance.real':req.body.amount,'balance.virtual':req.body.amount,'consecutive_days':1}})
   }catch(error){
     console.log(error)
   }
