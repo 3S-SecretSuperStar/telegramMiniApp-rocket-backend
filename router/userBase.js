@@ -171,7 +171,7 @@ export function logVisitor (req) {
 } 
 
 export async function taskPerform(req){
-  const data = await db.collection('users').findOne({user_id : req.body.userId},{_id: 0, task: 1});
+  const data = await db.collection('users').findOne({user_id : req.body.userId},{_id: 0, task: 1, balance: 1});
   console.log(data.task)
   return {task:data.task}
 }
