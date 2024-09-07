@@ -150,7 +150,7 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
       first_state : true,
       avatar_url : avatarUrl,
       dailyHistory : "" ,
-      dailyHistory : 0
+      consecutive_days : 0
     })
   }
     
