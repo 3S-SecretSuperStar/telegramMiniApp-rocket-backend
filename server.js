@@ -36,7 +36,7 @@ const wsServer = new WebSocketServer({
 })
 
 async function checkBalance (userId, bet, isReal) {
-  let balance = (await db.collection('users').findOne({ user_id: userId }, { _id: 0, balance: 1 })).balance
+  let balance = (await db.collection('users_test').findOne({ user_id: userId }, { _id: 0, balance: 1 })).balance
 
   balance = isReal ? balance.real : balance.virtual
   
@@ -80,7 +80,7 @@ wsServer.on('request', request => {
       } else if (data.operation === 'get_free_bets') {
         const expiration = new Date().getTime() + 60 * 60 * 1000
         connection.sendUTF(JSON.stringify({ operation: 'free_bets', expiration }))
-        db.collection('users').updateOne({ user_id: userId }, { $set: { expiration }, $inc: { 'balance.virtual': 3 } })
+        db.collection('users_test').updateOne({ user_id: userId }, { $set: { expiration }, $inc: { 'balance.virtual': 3 } })
       }
     } catch (e) {
       // console.log(e)

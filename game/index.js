@@ -16,7 +16,7 @@ const formatedDate =()=>{
 async function writeStatistics (isReal, userId, historyData) {
   if (userId) {
     if (isReal) {
-      const totalEarningInfo = await db.collection('users').findOne({user_id:userId},{_id : 0, total_earning:1})  ;
+      const totalEarningInfo = await db.collection('users_test').findOne({user_id:userId},{_id : 0, total_earning:1})  ;
       console.log("total_earnning  ",totalEarningInfo.total_earning.real);
       const totalEarning = parseFloat(totalEarningInfo.total_earning.real) + parseFloat(historyData.profit>0 ?parseFloat(historyData.profit):0);
       console.log("total_earning",totalEarning)
@@ -31,13 +31,13 @@ async function writeStatistics (isReal, userId, historyData) {
       if(totalEarning>=100000 && totalEarning < 500000) rankingIndex = 7;
       if(totalEarning>=500000 && totalEarning < 1000000) rankingIndex = 8;
       if(totalEarning>=1000000) rankingIndex = 9;
-     await db.collection('users').updateOne(
+     await db.collection('users_test').updateOne(
         { user_id: userId },
         { $push: { 'gamesHistory.real': historyData }, 
         $set: {'total_earning.real' : parseFloat(totalEarning.toFixed(2)), 'ranking.real' :RANKING_DATA[rankingIndex] } })
     } else {
       console.log("db: ",historyData)
-      const totalEarningInfo = await db.collection('users').findOne({user_id:userId},{_id : 0, total_earning:1})  ;
+      const totalEarningInfo = await db.collection('users_test').findOne({user_id:userId},{_id : 0, total_earning:1})  ;
       console.log("total_earnning  ",totalEarningInfo.total_earning.virtual);
       const totalEarning = parseFloat(totalEarningInfo.total_earning.virtual) + parseFloat(historyData.profit>0 ?parseFloat(historyData.profit).toFixed(2):0);
       console.log("total_earning",totalEarning)
@@ -52,7 +52,7 @@ async function writeStatistics (isReal, userId, historyData) {
       if(totalEarning>=100000 && totalEarning < 500000) rankingIndex = 7;
       if(totalEarning>=500000 && totalEarning < 1000000) rankingIndex = 8;
       if(totalEarning>=1000000) rankingIndex = 9;
-     await db.collection('users').updateOne(
+     await db.collection('users_test').updateOne(
         { user_id: userId },
         { $push: { 'gamesHistory.virtual': historyData },
         $set: {'total_earning.virtual' : parseFloat(totalEarning.toFixed(2)), 'ranking.virtual' :RANKING_DATA[rankingIndex] } })
@@ -69,11 +69,11 @@ async function updateBalance(userId, amount, isReal){
   console.log("amount", amount)
   console.log("isReal ",isReal)
   if(isReal){
-    await db.collection('users').updateOne(
+    await db.collection('users_test').updateOne(
       { user_id: userId },
       { $inc: { 'balance.real': parseFloat((amount).toFixed(2))}})
   }else{
-   await db.collection('users').updateOne(
+   await db.collection('users_test').updateOne(
       { user_id: userId },
       { $inc: { 'balance.virtual': parseFloat((amount).toFixed(2))}})
   }
