@@ -149,7 +149,8 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
       friend : friend,
       first_state : true,
       avatar_url : avatarUrl,
-      dailyHistory : "" 
+      dailyHistory : "" ,
+      dailyHistory : 0
     })
   }
     
@@ -447,7 +448,7 @@ export async function getFriend (req, res){
 
 export async function getTask (req){
   try{
-    const data = await db.collection('task_list').find({}).project({_id:0, title:1, amount:1, type: 1, count: 1}).toArray()
+    const data = await db.collection('task_list').find({}).project({_id:0, title:1, amount:1, type: 1, count: 1,description: 1,}).toArray()
     console.log("data task",data)
     return {
       task: data
