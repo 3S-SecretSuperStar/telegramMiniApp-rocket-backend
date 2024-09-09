@@ -108,6 +108,7 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
   console.log("unique:", isUnique);
   if(isUnique){
     const avatarName = path.basename(avatarUrl)
+    console.log("avatar name : ",avatarName)
     try{
       const response = await axios({
         method : 'GET',
