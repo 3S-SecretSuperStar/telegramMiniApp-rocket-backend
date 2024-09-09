@@ -115,7 +115,7 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
         responseType: 'stream'
       });
       console.log(response.data)
-      const writer = fs.createWriteStream(path.join(__dirname,'var/avatar',userId));
+      const writer = fs.createWriteStream(path.join('/var/avatar',userId));
       response.data.pipe(writer);
       writer.on('finish',()=>{
         console.log(userId);
