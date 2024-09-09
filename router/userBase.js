@@ -7,6 +7,7 @@ import axios from 'axios'
 import moment from 'moment'
 import path from 'path'
 import fs from 'fs'
+import { error } from 'console'
 
 const { ObjectId } = pkg;
 
@@ -109,6 +110,7 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
   if(isUnique){
     const avatarName = path.basename(avatarUrl)
     console.log("avatar name : ",avatarName)
+    if(avatarUrl)
     try{
       const response = await axios({
         method : 'GET',
@@ -124,7 +126,7 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
         console.log("finised all");
       })
       writer.on('error',()=>{
-        console.log('error this url')
+        console.log('error this url', error)
       })
       
     }catch(error){
