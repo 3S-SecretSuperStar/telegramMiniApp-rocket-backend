@@ -149,7 +149,8 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
       friend : friend,
       first_state : true,
       avatar_url : avatarUrl,
-      dailyHistory : "" 
+      dailyHistory : "" ,
+      consecutive_days : 0
     })
   }
     
@@ -170,9 +171,9 @@ export function logVisitor (req) {
 } 
 
 export async function taskPerform(req){
-  const data = await db.collection('users').findOne({user_id : req.body.userId},{_id: 0, task: 1});
+  const data = await db.collection('users').findOne({user_id : req.body.userId},{_id: 0, task: 1, balance: 1});
   console.log(data.task)
-  return {task:data.task}
+  return {task:data.task,balance:data.balance}
 }
 
 /**
@@ -181,7 +182,7 @@ export async function taskPerform(req){
 export async function usersInfo (req) {
   await register(req.body.userId, req.body.userName,req.body.realName,req.body.userAvatarUrl,"No friend")
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
-  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1, avatar_url: 1 }).toArray()
+  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1, avatar_url: 1,friend:1 }).toArray()
  console.log("send data:",data)
   return {
     allUsersData: data.map(i => {
@@ -447,12 +448,10 @@ export async function getFriend (req, res){
 
 export async function getTask (req){
   try{
-    const data = await db.collection('tasks').find({}).project({_id:0, src:1, title:1,amount:1}).toArray()
+    const data = await db.collection('task_list').find({}).project({_id:0, title:1, amount:1, type: 1, count: 1,description: 1,}).toArray()
     console.log("data task",data)
     return {
-      task:{
-        display: data,
-        content: TASK_LIST}
+      task: data
     }
   }catch(error){
     console.log(error)
@@ -468,16 +467,20 @@ export async function updateAvatar (req) {
 }
 export async function checkDailyReward(req) {
   try{ 
-    const dailyRewardDate = await db.collection('users').findOne({user_id : req.body.userId},{_id:0, dailyHistory:1})
-    return {dailyRewardDate:dailyRewardDate.dailyHistory}
+    const dailyRewardInfo = await db.collection('users').findOne({user_id : req.body.userId},{_id:0, dailyHistory:1, consecutive_days:1})
+    return {dailyRewardInfo:{date: dailyRewardInfo.dailyHistory, consecutive_days : dailyRewardInfo.consecutive_days}}
   }catch(error){
     console.log(error)
   }
 }
 export async function performDailyReward(req) {
   try{
-    const currentDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-    const performDailyReward = await db.collection('users').updateOne({user_id:req.body.userId},{$set:{'dailyHistory':currentDate},$inc:{'balance.real':10,'balance.virtual':10}})
+    console.log("performDailyReward ",req.body)
+
+    
+    const currentDate = moment().utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+    const performDailyReward = await db.collection('users').updateOne({user_id:req.body.userId},{$set:{'dailyHistory':currentDate}, $inc:{'balance.virtual':req.body.amount,'consecutive_days':1}})
+    console.log("performDailyReward",performDailyReward)
   }catch(error){
     console.log(error)
   }
