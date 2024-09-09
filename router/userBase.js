@@ -5,7 +5,8 @@ import pkg from 'mongodb'
 import * as bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
 import moment from 'moment'
-import { TASK_LIST } from '../utils/globals.js'
+import path from 'path'
+import fs from 'fs'
 
 const { ObjectId } = pkg;
 
@@ -106,6 +107,26 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
   const isUnique = await isNameUnique(userId)
   console.log("unique:", isUnique);
   if(isUnique){
+    const avatarName = path.basename(avatarUrl)
+    try{
+      const response = await axios({
+        method : 'GET',
+        url:avatarUrl,
+        responseType: 'stream'
+      });
+      console.log(response.data)
+      const writer = fs.createWriteStream(path.join(__dirname,'var/avatar',userId));
+      response.data.pipe(writer);
+      writer.on('finish',()=>{
+        console.log(userId);
+      })
+      writer.on('error',()=>{
+        console.log('error')
+      })
+      
+    }catch(error){
+      console.log(error.message)
+    }
     await db.collection('users').insertOne({
       registrationDateTime: new Date(),
       user_id: userId,
