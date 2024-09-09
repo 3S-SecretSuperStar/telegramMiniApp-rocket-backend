@@ -425,7 +425,8 @@ export async function taskBalance (req){
    await db.collection('users').updateOne({user_id : data.userId},{$inc : {'balance.virtual' : parseFloat(data.amount), 'total_earning.virtual' : parseFloat(data.amount)}, $push : {'task.virtual.done_task':data.task}});
 }
 export async function addFriend (req, res){
-  const avatarUrl = saveAvatar(req.body.userAvatarUrl,req.body.userId)
+  const avatarUrl = await saveAvatar(req.body.userAvatarUrl,req.body.userId)
+  console.log("avatar add Friend: ",avatarUrl);
   await register(req.body.userId, req.body.userName, req.body.realName, avatarUrl,"");
   
   try {
@@ -494,7 +495,8 @@ export async function getTask (req){
 }
 export async function updateAvatar (req) {
   try{
-    const avatarUrl = saveAvatar(req.body.userAvatarUrl,req.body.userId)
+    const avatarUrl = await saveAvatar(req.body.userAvatarUrl,req.body.userId)
+    console.log("avatar updateAvatar : ",avatarUrl);
     const updateState = await db.collection('users').updateOne({user_id:req.body.userId},{$set : {'avatar_url':avatarUrl}});
     return updateState
   }catch(error){
