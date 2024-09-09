@@ -21,6 +21,7 @@ app.use(express.static(path.join(__dirname, './public')))
 app.use('/profile', express.static(path.join(__dirname, './public')))
 
 app.use('/', router)
+app.use('/avatar',express.static('/var/avatar'))
 
 // catch 404 and forward to error handler
 app.use(function (req, res) {
