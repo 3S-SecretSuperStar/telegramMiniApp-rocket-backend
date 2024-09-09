@@ -204,6 +204,7 @@ export async function saveAvatar (avatarImg,userId){
       console.log(error)
     }
   }
+  else return null
 }
 
 /**
