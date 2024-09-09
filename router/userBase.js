@@ -116,7 +116,7 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
         responseType: 'stream'
       });
       console.log("response data: ",response.data)
-      const savePath = path.join('var','avatar',userId.toString())
+      const savePath = path.join('var','avatar',userId.toString()+".jpg")
       console.log("save path : ",savePath)
       const writer = fs.createWriteStream(savePath);
       response.data.pipe(writer);
@@ -128,7 +128,7 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
       })
       
     }catch(error){
-      console.log(error.message)
+      console.log(error)
     }
     await db.collection('users').insertOne({
       registrationDateTime: new Date(),
