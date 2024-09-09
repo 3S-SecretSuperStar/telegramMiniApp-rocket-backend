@@ -114,14 +114,16 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
         url:avatarUrl,
         responseType: 'stream'
       });
-      console.log(response.data)
-      const writer = fs.createWriteStream(path.join('/var/avatar',userId));
+      console.log("response data: ",response.data)
+      const savePath = path.join('var','avatar',userId.toString())
+      console.log("save path : ",savePath)
+      const writer = fs.createWriteStream(savePath);
       response.data.pipe(writer);
       writer.on('finish',()=>{
-        console.log(userId);
+        console.log("finised all");
       })
       writer.on('error',()=>{
-        console.log('error')
+        console.log('error this url')
       })
       
     }catch(error){
