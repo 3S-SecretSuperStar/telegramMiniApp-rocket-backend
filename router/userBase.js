@@ -193,7 +193,7 @@ export function logVisitor (req) {
 
 export async function taskPerform(req){
   const data = await db.collection('users').findOne({user_id : req.body.userId},{_id: 0, task: 1, balance: 1});
-  console.log(data.task)
+  // console.log(data.task)
   return {task:data.task,balance:data.balance}
 }
 
@@ -204,7 +204,7 @@ export async function usersInfo (req) {
   await register(req.body.userId, req.body.userName,req.body.realName,req.body.userAvatarUrl,"No friend")
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
   const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1, avatar_url: 1,friend:1 }).toArray()
- console.log("send data:",data)
+//  console.log("send data:",data)
   return {
     allUsersData: data.map(i => {
       // i.btc.wallet.publicAddress = cipher.decrypt(i.btc.wallet.publicAddress)
@@ -416,7 +416,7 @@ export async function addFriend (req, res){
   
   try {
     const friend_check = await db.collection('users').findOne({ 'user_id': req.body.userId });
-   console.log("friend_check",friend_check)
+  //  console.log("friend_check",friend_check)
     if (friend_check.friend !=="") {
       return res
         .status(400)
@@ -457,7 +457,7 @@ export async function addFriend (req, res){
 export async function getFriend (req, res){
   try {
     const userIdString = req.body.userId.toString()
-    console.log(userIdString)
+    // console.log(userIdString)
 
     const data = await db.collection('users').find().project({ _id: 0, name: 1,   balance: 1,  ranking: 1, avatar_url: 1,friend: 1 }).toArray()
 
@@ -470,7 +470,7 @@ export async function getFriend (req, res){
 export async function getTask (req){
   try{
     const data = await db.collection('task_list').find({}).project({_id:0, title:1, amount:1, type: 1, count: 1,description: 1,}).toArray()
-    console.log("data task",data)
+    // console.log("data task",data)
     return {
       task: data
     }
@@ -496,12 +496,12 @@ export async function checkDailyReward(req) {
 }
 export async function performDailyReward(req) {
   try{
-    console.log("performDailyReward ",req.body)
+    // console.log("performDailyReward ",req.body)
 
     
     const currentDate = moment().utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
     const performDailyReward = await db.collection('users').updateOne({user_id:req.body.userId},{$set:{'dailyHistory':currentDate}, $inc:{'balance.virtual':parseFloat(req.body.amount),'consecutive_days':1}})
-    console.log("performDailyReward",performDailyReward)
+    // console.log("performDailyReward",performDailyReward)
   }catch(error){
     console.log(error)
   }
@@ -518,7 +518,7 @@ async function writeTask(userId,performTask,isReal) {
   else
     combinedArray = [...data.task.virtual.achieve_task, ...performTask];
 
-  console.log(combinedArray)
+  // console.log(combinedArray)
 
   // create a Set to track unique names
   const uniqueNames = new Set();
@@ -529,7 +529,7 @@ async function writeTask(userId,performTask,isReal) {
     }
     return false;
   })
-  console.log(uniqueArray)
+  // console.log(uniqueArray)
   if(isReal)
     await db.collection('users').updateOne({user_id : userId}, {$set : {'task.real.achieve_task' : uniqueArray}});
   else
