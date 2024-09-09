@@ -107,10 +107,7 @@ export async function register (userId, userName,realName,avatarUrl,friend) {
   validateName(realName)
   const isUnique = await isNameUnique(userId)
   console.log("unique:", isUnique);
-  if(isUnique){
-    const avatarName = path.basename(avatarUrl)
-    console.log("avatar name : ", avatarName)
-    
+  if(isUnique){    
     await db.collection('users').insertOne({
       registrationDateTime: new Date(),
       user_id: userId,
@@ -181,39 +178,45 @@ export async function taskPerform(req){
   return {task:data.task,balance:data.balance}
 }
 
+export async function saveAvatar (avatarImg,userId){
+  if(avatarImg){
+    try{
+      const response = await axios({
+        method : 'GET',
+        url:avatarImg,
+        responseType: 'stream'
+      });
+      console.log(avatarImg)
+      // console.log("response data: ",response.data)
+      const savePath = "/var/avatar/"+userId.toString()+'.jpg';
+      console.log("save path : ",savePath)
+      const writer = fs.createWriteStream(savePath);
+      response.data.pipe(writer);
+      writer.on('finish',()=>{
+       return `https://telegramminiapp-rocket-backend-lbyg.onrender.com/avatar/${userId.toString()}.jpg`
+      })
+      writer.on('error',()=>{
+        console.log('error this url', error)
+      })
+      
+    }catch(error){
+      console.log(error)
+    }
+  }
+}
+
 /**
  * Get info for profile pages
  */
 export async function usersInfo (req) {
-  await register(req.body.userId, req.body.userName,req.body.realName,req.body.userAvatarUrl,"No friend")
+
+  const avatarUrl = await saveAvatar(req.body.userAvatarUrl,req.body.userId)
+  console.log("avatar : ",avatarUrl);
+  await register(req.body.userId, req.body.userName,req.body.realName,avatarUrl,"No friend")
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
   const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1,first_state: 1, avatar_url: 1,friend:1 }).toArray()
 //  console.log("send data:",data)
  
-if(req.body.userAvatarUrl){
-  try{
-    const response = await axios({
-      method : 'GET',
-      url:req.body.userAvatarUrl,
-      responseType: 'stream'
-    });
-    console.log(req.body.userAvatarUrl)
-    // console.log("response data: ",response.data)
-    const savePath = "/var/avatar/"+req.body.userId.toString()+'.jpg';
-    console.log("save path : ",savePath)
-    const writer = fs.createWriteStream(savePath);
-    response.data.pipe(writer);
-    writer.on('finish',()=>{
-      console.log("finised all");
-    })
-    writer.on('error',()=>{
-      console.log('error this url', error)
-    })
-    
-  }catch(error){
-    console.log(error)
-  }
-}
 return {
     allUsersData: data.map(i => {
       // i.btc.wallet.publicAddress = cipher.decrypt(i.btc.wallet.publicAddress)
@@ -421,7 +424,8 @@ export async function taskBalance (req){
    await db.collection('users').updateOne({user_id : data.userId},{$inc : {'balance.virtual' : parseFloat(data.amount), 'total_earning.virtual' : parseFloat(data.amount)}, $push : {'task.virtual.done_task':data.task}});
 }
 export async function addFriend (req, res){
-  await register(req.body.userId, req.body.userName, req.body.realName, req.body.userAvatarUrl,"");
+  const avatarUrl = saveAvatar(req.body.userAvatarUrl,req.body.userId)
+  await register(req.body.userId, req.body.userName, req.body.realName, avatarUrl,"");
   
   try {
     const friend_check = await db.collection('users').findOne({ 'user_id': req.body.userId });
@@ -489,7 +493,8 @@ export async function getTask (req){
 }
 export async function updateAvatar (req) {
   try{
-    const updateState = await db.collection('users').updateOne({user_id:req.body.userId},{$set : {'avatar_url':req.body.userAvatarUrl}});
+    const avatarUrl = saveAvatar(req.body.userAvatarUrl,req.body.userId)
+    const updateState = await db.collection('users').updateOne({user_id:req.body.userId},{$set : {'avatar_url':avatarUrl}});
     return updateState
   }catch(error){
     console.log(error)
