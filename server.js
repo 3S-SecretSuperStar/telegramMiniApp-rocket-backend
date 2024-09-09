@@ -40,7 +40,7 @@ async function checkBalance (userId, bet, isReal) {
 
   balance = isReal ? balance.real : balance.virtual
   
-  console.log("balance: ",balance," bet: ",bet)
+  // console.log("balance: ",balance," bet: ",bet)
 
 }
 
