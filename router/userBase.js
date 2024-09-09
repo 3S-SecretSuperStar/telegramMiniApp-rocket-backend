@@ -193,12 +193,12 @@ export async function saveAvatar (avatarImg,userId){
       const writer = fs.createWriteStream(savePath);
       response.data.pipe(writer);
       writer.on('finish',()=>{
-       return `https://telegramminiapp-rocket-backend-lbyg.onrender.com/avatar/${userId.toString()}.jpg`
+       console.log("Finish all")
       })
       writer.on('error',()=>{
         console.log('error this url', error)
       })
-      
+      return `https://telegramminiapp-rocket-backend-lbyg.onrender.com/avatar/${userId.toString()}.jpg`
     }catch(error){
       console.log(error)
     }
