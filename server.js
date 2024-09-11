@@ -64,6 +64,9 @@ wsServer.on('request', request => {
       if (data.bet < 1) {
         console.log("small bet")
       }
+      if(data.operation === 'ping'){
+        connection.sendUTF(JSON.stringify({ operation: 'pong' }))
+      }
 
       if (data.operation === 'start' && !isGameRunning) {
         isGameRunning = true
