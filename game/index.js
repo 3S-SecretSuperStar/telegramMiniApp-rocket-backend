@@ -81,7 +81,8 @@ async function updateBalance(userId, amount, isReal){
 
 export  function startGame (connection, data, setStopFlag, isReal) {
   // console.log(data)
-  let result = (1 / nonNullRandom()).toFixed(2)
+  let result = parseFloat((1 / nonNullRandom()).toFixed(2))
+  if(result<1.05) result = 1.05
   if (isReal) {
     result = parseFloat(1+(result-1)*0.9).toFixed(2)
   }
