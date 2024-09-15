@@ -529,7 +529,7 @@ export function addPerformList (req){
 }
 async function writeTask(userId,performTask,isReal) {
   const data = await db.collection('users').findOne({user_id : userId},{_id: 0, task: 1});
-
+  if(data.task.length>0){
   let combinedArray ;
   if(isReal)
     combinedArray = [...data.task.real.achieve_task, ...performTask];
@@ -552,6 +552,6 @@ async function writeTask(userId,performTask,isReal) {
     await db.collection('users').updateOne({user_id : userId}, {$set : {'task.real.achieve_task' : uniqueArray}});
   else
     await db.collection('users').updateOne({user_id : userId}, {$set : {'task.virtual.achieve_task' : uniqueArray}});
-
+}
 
 }
