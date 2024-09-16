@@ -211,53 +211,39 @@ export async function saveAvatar(avatarImg, userId) {
  * Get info for profile pages
  */
 export async function usersInfo(req) {
- 
-  // const avatarUrl = await saveAvatar(req.body.userAvatarUrl, req.body.userId)
+
+  const avatarUrl = await saveAvatar(req.body.userAvatarUrl, req.body.userId)
   // console.log("avatar : ", avatarUrl);
-  // await register(req.body.userId, req.body.userName, req.body.realName, avatarUrl, "No friend")
+  await register(req.body.userId, req.body.userName, req.body.realName, avatarUrl, "No friend")
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
-  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, avatar_url: 1, friend: 1 }).toArray()
+  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, }).toArray()
   //  console.log("send data:",data)
   let friendNumber = 0;
   let realRank = 0;
   let virtualRank = 0;
   const userData = data
     .sort((a, b) => b.balance.real - a.balance.real)
-    .map((i) => {((i.friend === parseInt( req.body.userId)) && (friendNumber += 1))
+    .map((i) => {
+      ((i.friend === parseInt(req.body.userId)) && (friendNumber += 1))
       return i
     })
-    .filter((i, index) => 
-     ( i.user_id ===parseInt (req.body.userId)) && (realRank = index + 1))[0];
+    .filter((i, index) =>
+      (i.user_id === parseInt(req.body.userId)) && (realRank = index + 1))[0];
 
   data
-    .sort((a,b)=>b.balance.virtual - a.balance.virtual)
-    .filter((i, index)=>( i.user_id === parseInt (req.body.userId)) && (virtualRank = index + 1))
-return {
-  userData:userData,
-  friendNumber:friendNumber,
-  realRank:realRank,
-  virtualRank:virtualRank
+    .sort((a, b) => b.balance.virtual - a.balance.virtual)
+    .filter((i, index) => (i.user_id === parseInt(req.body.userId)) && (virtualRank = index + 1))
+  return {
+    userData: userData,
+    friendNumber: friendNumber,
+    realRank: realRank,
+    virtualRank: virtualRank
+  }
 }
-  // return {
-  //   allUsersData: data.map(i => {
-  //     // i.btc.wallet.publicAddress = cipher.decrypt(i.btc.wallet.publicAddress)
-  //     if (req.body.historySize) {
-  //       i.realGames = i.gamesHistory.real.length
-  //       i.realWins = i.gamesHistory.real.filter(j => j.crash === 'x').length
-  //       i.realLosses = i.gamesHistory.real.filter(j => j.stop === 'x').length
-  //       if (i.gamesHistory.real.length > req.body.historySize) {
-  //         i.gamesHistory.real = i.gamesHistory.real.slice(i.gamesHistory.real.length - req.body.historySize)
-  //       }
-  //       i.virtualGames = i.gamesHistory.virtual.length
-  //       i.virtualWins = i.gamesHistory.virtual.filter(j => j.crash === 'x').length
-  //       i.virtualLosses = i.gamesHistory.virtual.filter(j => j.stop === 'x').length
-  //       if (i.gamesHistory.virtual.length > req.body.historySize) {
-  //         i.gamesHistory.virtual = i.gamesHistory.virtual.slice(i.gamesHistory.virtual.length - req.body.historySize)
-  //       }
-  //     }
-  //     return i
-  //   })
-  // }
+
+export async function allUsersInfo(req) {
+  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, balance: 1, ranking: 1, avatar_url: 1 }).toArray()
+  return { allUserData: userData }
 }
 
 export async function gameHistory(req) {
