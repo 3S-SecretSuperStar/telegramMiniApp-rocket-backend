@@ -48,7 +48,8 @@ const postRequests = [
   ['update_avatar',userBase.updateAvatar],
   ['check_dailyReward',userBase.checkDailyReward],
   ['perform_dailyReward',userBase.performDailyReward],
-  ['add_perform_list', userBase.addPerformList ]
+  ['add_perform_list', userBase.addPerformList ],
+  ['all_users_info',userBase.allUsersInfo]
 
 ]
 

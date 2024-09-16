@@ -12,6 +12,25 @@ const formatedDate =()=>{
   return currentDate
 } ;
 
+export async function updateRanking(userId){
+  const totalEarningInfo = await db.collection('users').findOne({user_id:userId},{_id : 0, total_earning:1})  ;
+      // console.log("total_earnning  ",totalEarningInfo.total_earning.real);
+  const totalEarning = parseFloat(totalEarningInfo.total_earning.real) + parseFloat(historyData.profit>0 ?parseFloat(historyData.profit):0);
+  // console.log("total_earning",totalEarning)
+  let rankingIndex = 0;
+  if(totalEarning<100) rankingIndex = 0;
+  if(totalEarning>=100 && totalEarning < 500) rankingIndex = 1;
+  if(totalEarning>=500 && totalEarning < 1000) rankingIndex = 2;
+  if(totalEarning>=1000 && totalEarning < 5000) rankingIndex = 3;
+  if(totalEarning>=5000 && totalEarning < 10000) rankingIndex = 4;
+  if(totalEarning>=10000 && totalEarning < 50000) rankingIndex = 5;
+  if(totalEarning>=50000 && totalEarning < 100000) rankingIndex = 6;
+  if(totalEarning>=100000 && totalEarning < 500000) rankingIndex = 7;
+  if(totalEarning>=500000 && totalEarning < 1000000) rankingIndex = 8;
+  if(totalEarning>=1000000) rankingIndex = 9;
+  return rankingIndex;
+}
+
 
 async function writeStatistics (isReal, userId, historyData) {
   if (userId) {
