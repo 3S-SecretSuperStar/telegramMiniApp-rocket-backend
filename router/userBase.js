@@ -227,7 +227,7 @@ export async function usersInfo(req) {
       return i
     })
     .filter((i, index) => 
-     ( i.user_id ===parseInt (req.body.userId)) && (realRank = index + 1));
+     ( i.user_id ===parseInt (req.body.userId)) && (realRank = index + 1))[0];
 
   data
     .sort((a,b)=>b.balance.virtual - a.balance.virtual)
