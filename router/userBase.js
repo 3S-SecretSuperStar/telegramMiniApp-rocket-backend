@@ -243,7 +243,7 @@ export async function usersInfo(req) {
 
 export async function allUsersInfo(req) {
   const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, balance: 1, ranking: 1, avatar_url: 1 }).toArray()
-  return { allUserData: userData }
+  return { allUserData: data }
 }
 
 export async function gameHistory(req) {
