@@ -175,4 +175,5 @@ export function stopGame (connection, startTime, bet, isReal, userId) {
   // console.log("wwwwwww")
   writeStatistics(isReal, userId, historyData)
   // console.log(historyData.profit)
+  return Date.now()
 }
