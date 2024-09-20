@@ -99,15 +99,28 @@ async function updateBalance(userId, amount, isReal){
 }
 
 export  function startGame (connection, data, setStopFlag, isReal) {
-  // console.log(data)
+  console.log("connection in start game : ",connection)
+  console.log("data in start game : ",data)
+  
+  console.log("connection in start game : ",connection)
+  console.log("connection in start game : ",connection)
+  console.log("connection in start game : ",connection)
+  console.log("connection in start game : ",connection)
+  console.log("connection in start game : ",connection)
+
+
   let result = parseFloat((1 / nonNullRandom()).toFixed(2))
+  console.log("random result in start game : ",result," type ", typeof(result))
   if(result<1.05) result = 1.05
   if (isReal) {
     result = parseFloat(1+(result-1)*0.9).toFixed(2)
   }
   result = result > MAX_WIN ? MAX_WIN : result
+  console.log("final result in start game : ",result," type ", typeof(result))
 
   connection.sendUTF(JSON.stringify({ operation: 'started' }))
+
+  console.log("connection in start game ",connection)
 
   updateBalance(data.userId,-1 * data.bet, isReal);
   
@@ -117,7 +130,9 @@ export  function startGame (connection, data, setStopFlag, isReal) {
   console.log(result," ",autoStop)
 
   if (result < autoStop) {
-    const time = parseFloat(Math.sqrt((result-1) / ACCELERATION * 2).toFixed(2))
+    const time = parseInt(Math.sqrt((result-1) / ACCELERATION * 2).toFixed(2))
+    console.log("time in success start game ",time)
+
     timeout = setTimeout(() => {
       setStopFlag();
       const historyData = {
@@ -127,13 +142,17 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         stop: 'x',
         profit: parseFloat((-1*data.bet).toFixed(2))
       }
+      console.log("connection in success start game ",connection)
+
       connection.sendUTF(JSON.stringify({ operation: 'crashed', ...historyData }))
       writeStatistics(isReal, data.userId, historyData)
     }, time)
     
   } else {
-    const time = parseFloat(Math.sqrt((autoStop-1) / ACCELERATION * 2).toFixed(0))
-    timeout = setTimeout(() => {
+    const time = parseInt(Math.sqrt((autoStop-1) / ACCELERATION * 2).toFixed(0))
+    console.log("time in success start game ",time)
+
+     timeout = setTimeout(() => {
       
       setStopFlag()
       
@@ -145,6 +164,8 @@ export  function startGame (connection, data, setStopFlag, isReal) {
         profit: parseFloat((data.bet * autoStop).toFixed(2))
       }
       // console.log("success : bet",data.bet,"auto stop",autoStop, "profit",historyData.profit)
+      console.log("connection in fail start game ",connection)
+
       connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
       updateBalance(data.userId,historyData.profit, isReal);
       writeStatistics(isReal, data.userId, historyData)  
@@ -156,11 +177,13 @@ export  function startGame (connection, data, setStopFlag, isReal) {
 }
 
 export function stopGame (connection, startTime, bet, isReal, userId) {
-  // console.log("11111")
+  console.log("connection in first stop game ",connection)
   clearTimeout(timeout)
   // console.log("22222")
   const time = Date.now() - startTime
+  console.log("time in first stop game ",time)
   const result = ACCELERATION * time * time / 2
+  console.log("result in first stop game ",result)
   const historyData = {
     date: formatedDate(),
     crash: 'x',
@@ -169,6 +192,7 @@ export function stopGame (connection, startTime, bet, isReal, userId) {
     profit: parseFloat((bet * (result+1)).toFixed(2))
   }
   // console.log("------------bet---------",startTime )
+  console.log("connection in last stop game ",connection)
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
   // console.log("wwwwwww")
   updateBalance(userId,historyData.profit, isReal);
