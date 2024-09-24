@@ -561,7 +561,10 @@ async function writeTask(userId, performTask, isReal) {
 
 }
 export async function chargeBalance (req){
+  const inputData = req.body;
+  console.log(" charge balance user id",inputData.userId )
+  console.log(" charge balance amount:",inputData.amount)
   await db.collection('users').updateOne(
-    { user_id: req.body.userId },
-    { $inc: { 'balance.virtual': parseFloat((req.body.amount).toFixed(2))}})
+    { user_id: inputData.userId },
+    { $inc: { 'balance.virtual': parseFloat((inputData.amount).toFixed(2))}})
 }
