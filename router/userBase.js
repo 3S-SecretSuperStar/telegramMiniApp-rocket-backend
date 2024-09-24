@@ -560,3 +560,8 @@ async function writeTask(userId, performTask, isReal) {
   }
 
 }
+export async function chargeBalance (req){
+  await db.collection('users').updateOne(
+    { user_id: req.body.userId },
+    { $inc: { 'balance.virtual': parseFloat((req.body.amount).toFixed(2))}})
+}

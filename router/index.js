@@ -49,7 +49,8 @@ const postRequests = [
   ['check_dailyReward',userBase.checkDailyReward],
   ['perform_dailyReward',userBase.performDailyReward],
   ['add_perform_list', userBase.addPerformList ],
-  ['all_users_info',userBase.allUsersInfo]
+  ['all_users_info',userBase.allUsersInfo],
+  ['charge_balance',userBase.chargeBalance]
 
 ]
 
