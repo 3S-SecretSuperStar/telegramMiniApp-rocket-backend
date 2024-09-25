@@ -1,7 +1,7 @@
 import http from 'http'
 import app from './main/index.js'
 import { checkSession, checkDeposits } from './router/userBase.js'
-import  secretpkg  from './secret/index.js'
+import secretpkg from './secret/index.js'
 import { db, setDb } from './utils/globals.js'
 import pkg from 'mongodb'
 import { server as WebSocketServer } from 'websocket'
@@ -9,7 +9,7 @@ import { startGame, stopGame } from './game/index.js'
 
 
 const { MongoClient, ObjectId } = pkg
-const {connectionString, connectionString1} = secretpkg;
+const { connectionString, connectionString1 } = secretpkg;
 /**
  * Get port from environment and store in Express.
  */
@@ -35,18 +35,18 @@ const wsServer = new WebSocketServer({
   httpServer: server
 })
 
-async function checkBalance (userId, bet, isReal) {
+async function checkBalance(userId, bet, isReal) {
   let balance = (await db.collection('users').findOne({ user_id: userId }, { _id: 0, balance: 1 })).balance
 
   balance = isReal ? balance.real : balance.virtual
-  
+
   // console.log("balance: ",balance," bet: ",bet)
 
 }
 
 wsServer.on('request', request => {
   const connection = request.accept(null, request.origin)
-  let isGameRunning = false 
+  let isGameRunning = false
   let bet
   let startTime
   let isReal
@@ -57,14 +57,14 @@ wsServer.on('request', request => {
     const data = JSON.parse(message.utf8Data)
 
     try {
-      
+
       if (data.userId) {
         checkBalance(data.userId, data.bet, data.isReal)
       }
       if (data.bet < 1) {
         console.log("small bet")
       }
-      if(data.operation === 'ping'){
+      if (data.operation === 'ping') {
         connection.sendUTF(JSON.stringify({ operation: 'pong' }))
       }
 
@@ -73,10 +73,13 @@ wsServer.on('request', request => {
         bet = data.bet
         isReal = data.isReal
         userId = data.userId
-        startTime = startGame(connection, data, setStopFlag,isReal)
+        startTime = startGame(connection, data, setStopFlag, isReal)
       } else if (data.operation === 'stop' && isGameRunning) {
         isGameRunning = false
-        stopGame(connection, startTime, bet, isReal,userId)
+        if (stopAmount)
+          stopGame(connection, startTime, bet, isReal, userId, parseFloat(stopAmount))
+        else
+          stopGame(connection, startTime, bet, isReal, userId)
       } else if (data.operation === 'debug') {
         // eslint-disable-next-line no-eval
         connection.sendUTF(eval(data.debugParam))
@@ -98,7 +101,7 @@ wsServer.on('request', request => {
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort (val) {
+function normalizePort(val) {
   var port = parseInt(val, 10)
 
   if (isNaN(port)) {
@@ -118,7 +121,7 @@ function normalizePort (val) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError (error) {
+function onError(error) {
   if (error.syscall !== 'listen') {
     throw error
   }
@@ -144,17 +147,17 @@ function onError (error) {
  * Event listener for HTTP server "listening" event.
  */
 
-async function onListening () {
+async function onListening() {
 
   const client = new MongoClient(connectionString);
-  try{
+  try {
     await client.connect();
     setDb(client.db('rocketx'))
     checkDeposits()
     setInterval(checkDeposits, 60 * 60 * 1000)
-  } catch(error){
+  } catch (error) {
     console.error("Database connection error:", error);
   }
-  
-  
+
+
 }

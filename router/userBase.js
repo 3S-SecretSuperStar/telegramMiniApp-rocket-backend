@@ -516,11 +516,11 @@ export async function checkDailyReward(req) {
   }
 }
 export async function performDailyReward(req) {
-  console.log("perform daily reward",req.body)
+  console.log("perform daily reward", req.body)
   try {
     // console.log("performDailyReward ",req.body)
 
-    
+
     const currentDate = moment().utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
     const performDailyReward = await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
     // console.log("performDailyReward",performDailyReward)
@@ -560,11 +560,13 @@ async function writeTask(userId, performTask, isReal) {
   }
 
 }
-export async function chargeBalance (req){
+export async function chargeBalance(req) {
   const inputData = req.body;
-  console.log(" charge balance user id",inputData.userId )
-  console.log(" charge balance amount:",inputData.amount)
-  await db.collection('users').updateOne(
-    { user_id: inputData.userId },
-    { $inc: { 'balance.virtual': parseFloat((inputData.amount).toFixed(2))}})
+  console.log(" charge balance user id", inputData.userId)
+  console.log(" charge balance amount:", inputData.amount)
+  if (inputData.amount > 0) {
+    await db.collection('users').updateOne(
+      { user_id: inputData.userId },
+      { $inc: { 'balance.virtual': parseFloat((inputData.amount).toFixed(2)) } })
+  }
 }
