@@ -162,7 +162,7 @@ export function startGame(connection, data, setStopFlag, isReal) {
 export function stopGame(connection, startTime, bet, isReal, userId, stopAmount) {
   // console.log("11111")
   clearTimeout(timeout)
-  // console.log("22222")
+  console.log("stop game",stopAmount)
   const time = Date.now() - startTime
   const result = stopAmount!=='x' ? parseFloat(stopAmount)-1 : ACCELERATION * time * time / 2
   const historyData = {

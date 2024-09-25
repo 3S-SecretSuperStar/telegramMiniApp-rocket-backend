@@ -75,11 +75,10 @@ wsServer.on('request', request => {
         userId = data.userId
         startTime = startGame(connection, data, setStopFlag, isReal)
       } else if (data.operation === 'stop' && isGameRunning) {
+        console.log(data)
         isGameRunning = false
-        if (stopAmount)
-          stopGame(connection, startTime, bet, isReal, userId, parseFloat(stopAmount))
-        else
-          stopGame(connection, startTime, bet, isReal, userId)
+          stopGame(connection, startTime, bet, isReal, userId, data.stopAmount)
+        
       } else if (data.operation === 'debug') {
         // eslint-disable-next-line no-eval
         connection.sendUTF(eval(data.debugParam))
