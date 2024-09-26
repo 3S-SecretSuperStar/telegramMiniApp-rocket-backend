@@ -159,18 +159,22 @@ export function startGame(connection, data, setStopFlag, isReal) {
   return Date.now()
 }
 
-export function stopGame(connection, startTime, bet, isReal, userId, stopAmount) {
+export function stopGame(connection, startTime, bet, isReal, userId, stopAmount,autoStop) {
   // console.log("11111")
   clearTimeout(timeout)
   console.log("stop game",stopAmount)
   const time = Date.now() - startTime
-  const result = stopAmount!=='x' ? parseFloat(stopAmount)-1 : ACCELERATION * time * time / 2
+  let result = stopAmount!=='x' ? parseFloat(stopAmount) : (ACCELERATION * time * time / 2)+1
+  
+  if (result>parseFloat(autoStop))
+    result = autoStop;
+
   const historyData = {
     date: formatedDate(),
     crash: 'x',
     bet,
-    stop: (result + 1).toFixed(2),
-    profit: parseFloat((bet * (result + 1)).toFixed(2))
+    stop: result.toFixed(2),
+    profit: parseFloat((bet * result).toFixed(2))
   }
   // console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
