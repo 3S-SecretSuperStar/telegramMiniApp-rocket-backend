@@ -164,9 +164,9 @@ export function stopGame(connection, startTime, bet, isReal, userId, stopAmount,
   clearTimeout(timeout)
   console.log("stop game",stopAmount)
   const time = Date.now() - startTime
-  let result = stopAmount!=='x' ? parseFloat(stopAmount) : (ACCELERATION * time * time / 2)+1
+  let result = (stopAmount==='x' ?  ((ACCELERATION * time * time / 2)+1):parseFloat(stopAmount))
   
-  if (result>parseFloat(autoStop))
+  if (result>parseFloat(autoStop)|| !stopAmount)
     result = autoStop;
 
   const historyData = {
