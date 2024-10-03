@@ -217,18 +217,20 @@ export async function usersInfo(req) {
   await register(req.body.userId, req.body.userName, req.body.realName, avatarUrl, "No friend")
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
   const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, task: 1, dailyHistory: 1 }).toArray()
-  //  console.log("send data:",data)
+   console.log("length of fetch data:",data.length)
   let friendNumber = 0;
   let realRank = 0;
   let virtualRank = 0;
-  const userData = data
+  const userData = (data
     .sort((a, b) => b.balance.real - a.balance.real)
     .map((i) => {
-      ((i.friend === parseInt(req.body.userId)) && (friendNumber += 1))
+      if(i.friend === parseInt(req.body.userId)) friendNumber += 1
       return i
-    })
+    }))
     .filter((i, index) =>
-      (i.user_id === parseInt(req.body.userId)) && (realRank = index + 1))[0];
+      {if(i.user_id === parseInt(req.body.userId)) realRank = index + 1
+        return i;
+      })[0];
 
   data
     .sort((a, b) => b.balance.virtual - a.balance.virtual)
