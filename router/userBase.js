@@ -498,7 +498,7 @@ export async function getFriend(req, res) {
 
 export async function getTask(req) {
   try {
-    const data = await db.collection('task_list').find({}).project({ _id: 0, title: 1, amount: 1, type: 1, count: 1, description: 1, index: 1 }).toArray()
+    const data = await db.collection('tasks').find({}).project({ _id: 0, title: 1, amount: 1, type: 1, count: 1, description: 1, index: 1, sort: 1 }).toArray()
     // console.log("data task",data)
     return {
       task: data
