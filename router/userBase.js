@@ -546,9 +546,7 @@ export function addPerformList(req) {
 async function writeTask(userId, performTask, isReal) {
   try { 
     const data = await db.collection('users').findOne({ user_id: userId }, { _id: 0, task: 1 }); 
-  }catch(e){
-    console.log(e)
-  }
+  
 
   // console.log(data.task)
   if (data) {
@@ -575,6 +573,9 @@ async function writeTask(userId, performTask, isReal) {
     else
       await db.collection('users').updateOne({ user_id: userId }, { $set: { 'task.virtual.achieve_task': uniqueArray } });
   }
+}catch(e){
+  console.log(e)
+}
 
 }
 export async function chargeBalance(req) {
