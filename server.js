@@ -51,6 +51,7 @@ wsServer.on('request', request => {
   let startTime
   let isReal
   let userId
+  let autoStop
   const setStopFlag = () => { isGameRunning = false }
 
   connection.on('message', message => {
@@ -73,11 +74,12 @@ wsServer.on('request', request => {
         bet = data.bet
         isReal = data.isReal
         userId = data.userId
+        autoStop = data.autoStop
         startTime = startGame(connection, data, setStopFlag, isReal)
       } else if (data.operation === 'stop' && isGameRunning) {
         console.log(data)
         isGameRunning = false
-          stopGame(connection, startTime, bet, isReal, userId, data.stopAmount)
+          stopGame(connection, startTime, bet, isReal, userId, data.stopAmount,data.autoStop)
         
       } else if (data.operation === 'debug') {
         // eslint-disable-next-line no-eval
