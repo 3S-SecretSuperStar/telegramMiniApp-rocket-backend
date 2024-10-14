@@ -588,3 +588,7 @@ export async function chargeBalance(req) {
       { $inc: { 'balance.virtual': parseFloat((inputData.amount).toFixed(2)) } })
   }
 }
+export async function allUserId(){
+  const data = await db.collection('users').find().project({ _id: 0, user_id: 1}).toArray()
+  return data;
+}
