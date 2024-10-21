@@ -39,9 +39,6 @@ async function checkBalance(userId, bet, isReal) {
   let balance = (await db.collection('users').findOne({ user_id: userId }, { _id: 0, balance: 1 })).balance
 
   balance = isReal ? balance.real : balance.virtual
-
-  // console.log("balance: ",balance," bet: ",bet)
-
 }
 
 wsServer.on('request', request => {
@@ -79,8 +76,7 @@ wsServer.on('request', request => {
       } else if (data.operation === 'stop' && isGameRunning) {
         console.log(data)
         isGameRunning = false
-          stopGame(connection, startTime, bet, isReal, userId, data.stopAmount,data.autoStop)
-        
+        stopGame(connection, startTime, bet, isReal, userId, data.stopAmount, data.autoStop)
       } else if (data.operation === 'debug') {
         // eslint-disable-next-line no-eval
         connection.sendUTF(eval(data.debugParam))
@@ -159,6 +155,5 @@ async function onListening() {
   } catch (error) {
     console.error("Database connection error:", error);
   }
-
 
 }

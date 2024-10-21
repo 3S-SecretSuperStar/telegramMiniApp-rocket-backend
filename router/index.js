@@ -52,7 +52,6 @@ const postRequests = [
   ['all_users_info',userBase.allUsersInfo],
   ['charge_balance',userBase.chargeBalance],
   ['all_users_id', userBase.allUserId]
-
 ]
 
 postRequests.forEach(([path, controller]) => {
@@ -70,8 +69,6 @@ postRequests.forEach(([path, controller]) => {
  */
 function addRoute (address, method, title, description, keywords) {
   router.get(`/${address}`, async (req, res) => {
-    
-
     res.render(
       'template', {
         app,

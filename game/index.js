@@ -115,8 +115,6 @@ export function startGame(connection, data, setStopFlag, isReal) {
 
   updateBalance(data.userId, -1 * data.bet, isReal);
 
-
-
   const autoStop = parseFloat(data.autoStop)
   console.log(result, " ", autoStop)
 
@@ -138,9 +136,7 @@ export function startGame(connection, data, setStopFlag, isReal) {
   } else {
     const time = parseFloat(Math.sqrt((autoStop - 1) / ACCELERATION * 2).toFixed(0))
     timeout = setTimeout(() => {
-
       setStopFlag()
-
       const historyData = {
         date: formatedDate(),
         crash: 'x',
@@ -150,23 +146,19 @@ export function startGame(connection, data, setStopFlag, isReal) {
       }
       // console.log("success : bet",data.bet,"auto stop",autoStop, "profit",historyData.profit)
       connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
-      updateBalance(data.userId, historyData.profit, isReal);
+      // updateBalance(data.userId, historyData.profit, isReal);
       writeStatistics(isReal, data.userId, historyData)
     }, time)
-
   }
-
   return Date.now()
 }
 
-export function stopGame(connection, startTime, bet, isReal, userId, stopAmount,autoStop) {
-  // console.log("11111")
-  clearTimeout(timeout)
-  console.log("stop game",stopAmount)
+export function stopGame(connection, startTime, bet, isReal, userId, stopAmount, autoStop) {
+  clearTimeout(timeout);
   const time = Date.now() - startTime
-  let result = (stopAmount==='x' ?  ((ACCELERATION * time * time / 2)+1):parseFloat(stopAmount))
-  
-  if (result>parseFloat(autoStop)|| !stopAmount)
+  let result = (stopAmount === 'x' ? ((ACCELERATION * time * time / 2) + 1) : parseFloat(stopAmount))
+
+  if (result > parseFloat(autoStop) || !stopAmount)
     result = autoStop;
 
   const historyData = {
@@ -178,9 +170,7 @@ export function stopGame(connection, startTime, bet, isReal, userId, stopAmount,
   }
   // console.log("------------bet---------",startTime )
   connection.sendUTF(JSON.stringify({ operation: 'stopped', ...historyData }))
-  // console.log("wwwwwww")
-  updateBalance(userId, historyData.profit, isReal);
-  // console.log("wwwwwww")
+  // updateBalance(userId, historyData.profit, isReal);
   writeStatistics(isReal, userId, historyData)
   // console.log(historyData.profit)
   return Date.now()

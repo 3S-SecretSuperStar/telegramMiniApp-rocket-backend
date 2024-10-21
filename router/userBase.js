@@ -582,12 +582,11 @@ export async function chargeBalance(req) {
   const inputData = req.body;
   console.log(" charge balance user id", inputData.userId)
   console.log(" charge balance amount:", inputData.amount)
-  if (inputData.amount > 0) {
-    await db.collection('users').updateOne(
-      { user_id: inputData.userId },
-      { $inc: { 'balance.virtual': parseFloat((inputData.amount).toFixed(2)) } })
-  }
+  await db.collection('users').updateOne(
+    { user_id: inputData.userId },
+    { $inc: { 'balance.virtual': parseFloat((inputData.amount).toFixed(2)) } })
 }
+
 export async function allUserId(){
   const data = await db.collection('users').find().project({ _id: 0, user_id: 1}).toArray()
   return data;
