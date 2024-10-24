@@ -589,8 +589,7 @@ export async function chargeBalance(req) {
 
 export async function checkBalance(userId, bet, isReal) {
   let balance = (await db.collection('users').findOne({ user_id: userId }, { _id: 0, balance: 1 })).balance
-
-  balance = isReal ? balance.real : balance.virtual
+  return isReal ? balance.real : balance.virtual;
 }
 
 export async function allUserId() {
@@ -609,7 +608,15 @@ export async function gameHandler(req) {
         }
       }
     }
-    checkBalance(inputData.userId);
+    const userBalance = checkBalance(inputData.userId, inputData.bet, inputData.isReal);
+    if (userBalance < 0) {
+      return {
+        status: "error",
+        data: {
+          msg: "no such balance"
+        }
+      }
+    }
     if (inputData.bet < 1) {
       return {
         status: "error",

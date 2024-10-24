@@ -182,7 +182,7 @@ export function startGameWithoutSocket(data) {
     }
     result = result > MAX_WIN ? MAX_WIN : result
 
-    updateBalance(data.userId, -1 * data.bet, data.isReal);
+    updateBalance(data.userId, -1 * Number(data.bet), data.isReal);
 
     const autoStop = parseFloat(data.autoStop)
     console.log(result, " ", autoStop);
