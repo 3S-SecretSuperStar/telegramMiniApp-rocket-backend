@@ -608,7 +608,8 @@ export async function gameHandler(req) {
         }
       }
     }
-    const userBalance = checkBalance(inputData.userId, inputData.bet, inputData.isReal);
+    const userBalance = await checkBalance(inputData.userId, inputData.bet, inputData.isReal);
+    console.log("userBalance", userBalance);
     if (userBalance <= 0) {
       return {
         status: "error",

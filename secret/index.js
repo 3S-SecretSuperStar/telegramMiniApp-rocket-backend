@@ -2,8 +2,8 @@ import { cipher } from '../utils/globals.js'
 
 const password = encodeURIComponent("rxUser");
 
-const connectionString = `mongodb+srv://rxUser:${password}@rocketx.jv2sb.mongodb.net/?retryWrites=true&w=majority&appName=RocketX`;
-// const connectionString = `mongodb://localhost:27017/rocketX`
+// const connectionString = `mongodb+srv://rxUser:${password}@rocketx.jv2sb.mongodb.net/?retryWrites=true&w=majority&appName=RocketX`;
+const connectionString = `mongodb://localhost:27017/rocketX`
 
 const staticSalt = '6RqRHnxZtoyQfJJ65vSXgLlP1Y3VypbF'
 
