@@ -175,3 +175,42 @@ export function stopGame(connection, startTime, bet, isReal, userId, stopAmount,
   // console.log(historyData.profit)
   return Date.now()
 }
+
+export function startGameWithoutSocket(data) {
+  try {
+    let result = parseFloat((1 / nonNullRandom()).toFixed(2))
+    if (result < 1.05) result = 1.05
+    if (data.isReal) {
+      result = parseFloat(1 + (result - 1) * 0.9).toFixed(2)
+    }
+    result = result > MAX_WIN ? MAX_WIN : result
+
+    updateBalance(data.userId, -1 * data.bet, data.isReal);
+
+    const autoStop = parseFloat(data.autoStop)
+    console.log(result, " ", autoStop);
+    return autoStop > result ? result : autoStop;
+  } catch (error) {
+    console.log("error", error);
+    return false;
+  }
+}
+
+export function stopGameWithoutSocket(data) {
+  try {
+    const historyData = {
+      date: formatedDate(),
+      crash: data.isSuccess ? 'x' : Number(data.result).toFixed(2),
+      bet: Number(data.bet),
+      stop: data.isSuccess ? Number(data.result).toFixed(2) : 'x',
+      profit: data.isSuccess ? Number(data.profit).toFixed(2) : 0
+    }
+
+    updateBalance(data.userId, data.profit, data.isReal);
+    writeStatistics(data.isReal, data.userId, historyData)
+    return true;
+  } catch (error) {
+    console.log("error", error);
+    return false;
+  }
+}

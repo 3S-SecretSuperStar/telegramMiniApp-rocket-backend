@@ -51,7 +51,8 @@ const postRequests = [
   ['add_perform_list', userBase.addPerformList ],
   ['all_users_info',userBase.allUsersInfo],
   ['charge_balance',userBase.chargeBalance],
-  ['all_users_id', userBase.allUserId]
+  ['all_users_id', userBase.allUserId],
+  ['operate_game', userBase.gameHandler]
 ]
 
 postRequests.forEach(([path, controller]) => {
@@ -67,6 +68,7 @@ postRequests.forEach(([path, controller]) => {
  * @param {string} description Page description
  * @param {string} keywords Page keywords
  */
+
 function addRoute (address, method, title, description, keywords) {
   router.get(`/${address}`, async (req, res) => {
     res.render(

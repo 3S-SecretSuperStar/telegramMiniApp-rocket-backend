@@ -1,12 +1,10 @@
-import {cipher} from '../utils/globals.js'
+import { cipher } from '../utils/globals.js'
 
 const password = encodeURIComponent("rxUser");
 
-// const connectionString = 'TSwRcaWUR6z01B4nQrMmVkt2HU19lKJzxk4s/5VNxBTsae1OHithmQeGv0zZwbMNelnLrcNGMBvkW529+2lnF3Qz9OZxG7gg/w+2RSgjpJycsguwSMjUbnmq7w/G+/V8F1r4rlzcL4nUtJ6ylfe+'
-// const connectionString = `mongodb+srv://juliosantos950527:${password}@cluster0.kqiaa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-const connectionString = `mongodb+srv://rxUser:${password}@rocketx.jv2sb.mongodb.net/?retryWrites=true&w=majority&appName=RocketX`;
+// const connectionString = `mongodb+srv://rxUser:${password}@rocketx.jv2sb.mongodb.net/?retryWrites=true&w=majority&appName=RocketX`;
+const connectionString = `mongodb://localhost:27017/rocketX`
 
-const connectionString1 = `mongodb://localhost:27017/rocketX`
 const staticSalt = '6RqRHnxZtoyQfJJ65vSXgLlP1Y3VypbF'
 
 // const privateKey = 'rQqKWG24YJsZpUOWTWEiQ/WmQOZAssKeTDDnwkH4CKSUsiLvHLnjtQhDC2o6BSv7h+TSRA6q0yxzHavZDJCOGe3mDhJTzL4DUpz0xbKIgNg='
@@ -14,9 +12,8 @@ const staticSalt = '6RqRHnxZtoyQfJJ65vSXgLlP1Y3VypbF'
 const publicAddress = 'mAp3NxM7B53aLvY+nTKkRaf3O/7NMRpqAqnIykwAf2K59Oj5ec4T1TOdLMT+iDk2O5U='
 const privateKeyWIF = '/auMjro3yS1HNOw+slPstH6uWTBHJhc='
 
-export default  {
+export default {
   connectionString: connectionString,
-  connectionString1:connectionString1,
   staticSalt: cipher.decrypt(staticSalt),
 
   // privateKey: cipher.decrypt(privateKey),

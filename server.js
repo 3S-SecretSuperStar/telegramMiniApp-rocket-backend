@@ -1,6 +1,6 @@
 import http from 'http'
 import app from './main/index.js'
-import { checkSession, checkDeposits } from './router/userBase.js'
+import { checkSession, checkDeposits, checkBalance } from './router/userBase.js'
 import secretpkg from './secret/index.js'
 import { db, setDb } from './utils/globals.js'
 import pkg from 'mongodb'
@@ -35,12 +35,6 @@ const wsServer = new WebSocketServer({
   httpServer: server
 })
 
-async function checkBalance(userId, bet, isReal) {
-  let balance = (await db.collection('users').findOne({ user_id: userId }, { _id: 0, balance: 1 })).balance
-
-  balance = isReal ? balance.real : balance.virtual
-}
-
 wsServer.on('request', request => {
   const connection = request.accept(null, request.origin)
   let isGameRunning = false
@@ -62,6 +56,7 @@ wsServer.on('request', request => {
       if (data.bet < 1) {
         console.log("small bet")
       }
+      
       if (data.operation === 'ping') {
         connection.sendUTF(JSON.stringify({ operation: 'pong' }))
       }
@@ -93,10 +88,6 @@ wsServer.on('request', request => {
     console.log('Client has disconnected.')
   })
 })
-
-/**
- * Normalize a port into a number, string, or false.
- */
 
 function normalizePort(val) {
   var port = parseInt(val, 10)

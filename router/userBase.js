@@ -5,12 +5,11 @@ import pkg from 'mongodb'
 import * as bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
 import moment from 'moment'
-import path from 'path'
 import fs from 'fs'
 import { error } from 'console'
+import { startGame, startGameWithoutSocket, stopGame, stopGameWithoutSocket } from '../game/index.js'
 
 const { ObjectId } = pkg;
-
 /**
  * Checks if this name is unique
  *
@@ -85,8 +84,6 @@ export async function checkSession(userName, session) {
     throw Error('session')
   }
 }
-
-
 
 /**
  * Ends a user session. Nullifies the current session key
@@ -440,6 +437,7 @@ export async function taskBalance(req) {
   else
     await db.collection('users').updateOne({ user_id: data.userId }, { $inc: { 'balance.virtual': parseFloat(data.amount), 'total_earning.virtual': parseFloat(data.amount) }, $push: { 'task.virtual.done_task': data.task } });
 }
+
 export async function addFriend(req, res) {
   const avatarUrl = await saveAvatar(req.body.userAvatarUrl, req.body.userId)
   console.log("avatar add Friend: ", avatarUrl);
@@ -483,6 +481,7 @@ export async function addFriend(req, res) {
     res.status(400).json({ msg: error });
   }
 };
+
 export async function getFriend(req, res) {
   try {
     const userIdString = req.body.userId.toString()
@@ -507,6 +506,7 @@ export async function getTask(req) {
     console.log(error)
   }
 }
+
 export async function updateAvatar(req) {
   try {
     const avatarUrl = await saveAvatar(req.body.userAvatarUrl, req.body.userId)
@@ -517,6 +517,7 @@ export async function updateAvatar(req) {
     console.log(error)
   }
 }
+
 export async function checkDailyReward(req) {
   try {
     const dailyRewardInfo = await db.collection('users').findOne({ user_id: req.body.userId }, { _id: 0, dailyHistory: 1, consecutive_days: 1 })
@@ -525,6 +526,7 @@ export async function checkDailyReward(req) {
     console.log(error)
   }
 }
+
 export async function performDailyReward(req) {
   console.log("perform daily reward", req.body)
   try {
@@ -538,46 +540,44 @@ export async function performDailyReward(req) {
     console.log(error)
   }
 }
+
 export function addPerformList(req) {
   const data = req.body;
-  console.log("add perform task : ",data)
+  console.log("add perform task : ", data)
   writeTask(data.userId, data.performTask, data.isReal)
 }
+
 async function writeTask(userId, performTask, isReal) {
-  try { 
-    const data = await db.collection('users').findOne({ user_id: userId }, { _id: 0, task: 1 }); 
-  
+  try {
+    const data = await db.collection('users').findOne({ user_id: userId }, { _id: 0, task: 1 });
 
-  // console.log(data.task)
-  if (data) {
-    let combinedArray;
-    if (isReal)
-      combinedArray = [...data.task.real.achieve_task, ...performTask];
-    else
-      combinedArray = [...data.task.virtual.achieve_task, ...performTask];
+    if (data) {
+      let combinedArray;
+      if (isReal)
+        combinedArray = [...data.task.real.achieve_task, ...performTask];
+      else
+        combinedArray = [...data.task.virtual.achieve_task, ...performTask];
 
-    // console.log(combinedArray)
-
-    // create a Set to track unique names
-    const uniqueNames = new Set();
-    const uniqueArray = combinedArray.filter((item) => {
-      if (!uniqueNames.has(item)) {
-        uniqueNames.add(item);
-        return true
-      }
-      return false;
-    })
-    // console.log(uniqueArray)
-    if (isReal)
-      await db.collection('users').updateOne({ user_id: userId }, { $set: { 'task.real.achieve_task': uniqueArray } });
-    else
-      await db.collection('users').updateOne({ user_id: userId }, { $set: { 'task.virtual.achieve_task': uniqueArray } });
+      // create a Set to track unique names
+      const uniqueNames = new Set();
+      const uniqueArray = combinedArray.filter((item) => {
+        if (!uniqueNames.has(item)) {
+          uniqueNames.add(item);
+          return true
+        }
+        return false;
+      })
+      // console.log(uniqueArray)
+      if (isReal)
+        await db.collection('users').updateOne({ user_id: userId }, { $set: { 'task.real.achieve_task': uniqueArray } });
+      else
+        await db.collection('users').updateOne({ user_id: userId }, { $set: { 'task.virtual.achieve_task': uniqueArray } });
+    }
+  } catch (e) {
+    console.log(e)
   }
-}catch(e){
-  console.log(e)
 }
 
-}
 export async function chargeBalance(req) {
   const inputData = req.body;
   console.log(" charge balance user id", inputData.userId)
@@ -587,7 +587,75 @@ export async function chargeBalance(req) {
     { $inc: { 'balance.virtual': parseFloat((inputData.amount).toFixed(2)) } })
 }
 
-export async function allUserId(){
-  const data = await db.collection('users').find().project({ _id: 0, user_id: 1}).toArray()
+export async function checkBalance(userId, bet, isReal) {
+  let balance = (await db.collection('users').findOne({ user_id: userId }, { _id: 0, balance: 1 })).balance
+
+  balance = isReal ? balance.real : balance.virtual
+}
+
+export async function allUserId() {
+  const data = await db.collection('users').find().project({ _id: 0, user_id: 1 }).toArray()
   return data;
+}
+
+export async function gameHandler(req) {
+  try {
+    const inputData = req.body;
+    if (!inputData.userId) {
+      return {
+        status: "error",
+        data: {
+          msg: "no user info"
+        }
+      }
+    }
+    checkBalance(inputData.userId);
+    if (inputData.bet < 1) {
+      return {
+        status: "error",
+        data: {
+          msg: "small bet"
+        }
+      }
+    }
+    console.log(inputData);
+    
+    if (inputData.operation == "start") {
+      const result = startGameWithoutSocket(inputData)
+      if (!result) {
+        return {
+          status: "success",
+          data: {
+            gameLimit: result,
+            operation: "started"
+          }
+        } 
+      } else {
+        return {
+          status: "success",
+          data: {
+            gameLimit: result,
+            operation: "started"
+          }
+        }
+      }
+    } else if (inputData.operation == "stop") {
+      const result = stopGameWithoutSocket(inputData);
+      return {
+        status: "success",
+        data: {
+          result,
+          isSuccess: inputData.isSuccess
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      status: "error",
+      data: {
+        msg: "Unexpected Error"
+      }
+    }
+  }
 }
