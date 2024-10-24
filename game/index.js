@@ -88,17 +88,32 @@ function nonNullRandom() {
 }
 
 async function updateBalance(userId, amount, isReal) {
-  // console.log("user Id",userId)
-  // console.log("amount", amount)
-  // console.log("isReal ",isReal)
   if (isReal) {
     await db.collection('users').updateOne(
       { user_id: userId },
-      { $inc: { 'balance.real': parseFloat((amount).toFixed(2)) } })
+      {
+        $set: {
+          'balance.real': {
+            $max: [
+              0,
+              { $add: ['$balance.real', parseFloat((amount).toFixed(2))] }
+            ]
+          }
+        }
+      })
   } else {
     await db.collection('users').updateOne(
       { user_id: userId },
-      { $inc: { 'balance.virtual': parseFloat((amount).toFixed(2)) } })
+      {
+        $set: {
+          'balance.virtual': {
+            $max: [
+              0,
+              { $add: ['$balance.virtual', parseFloat((amount).toFixed(2))] }
+            ]
+          }
+        }
+      })
   }
 }
 
