@@ -617,6 +617,10 @@ export async function gameHandler(req) {
         }
       }
     }
+    if (inputData.bet > userBalance) {
+      inputData.bet = userBalance;
+    }
+
     if (inputData.bet < 1) {
       return {
         status: "error",
