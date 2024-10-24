@@ -91,29 +91,11 @@ async function updateBalance(userId, amount, isReal) {
   if (isReal) {
     await db.collection('users').updateOne(
       { user_id: userId },
-      {
-        $set: {
-          'balance.real': {
-            $max: [
-              0,
-              { $add: ['$balance.real', parseFloat((amount).toFixed(2))] }
-            ]
-          }
-        }
-      })
+      { $inc: { 'balance.real': parseFloat((amount).toFixed(2)) } })
   } else {
     await db.collection('users').updateOne(
       { user_id: userId },
-      {
-        $set: {
-          'balance.virtual': {
-            $max: [
-              0,
-              { $add: ['$balance.virtual', parseFloat((amount).toFixed(2))] }
-            ]
-          }
-        }
-      })
+      { $inc: { 'balance.virtual': parseFloat((amount).toFixed(2)) } })
   }
 }
 
