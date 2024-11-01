@@ -22,7 +22,7 @@ app.use('/profile', express.static(path.join(__dirname, './public')))
 
 app.use('/', router)
 app.use('/avatar',express.static('/var/avatar'))
-app.use('/icon',express.static('/var/icon'))
+app.use('/icon',express.static('/var/avatar/icon'))
 
 // catch 404 and forward to error handler
 app.use(function (req, res) {
