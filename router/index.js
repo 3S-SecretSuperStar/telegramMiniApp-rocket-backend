@@ -61,6 +61,18 @@ const postRequests = [
 postRequests.forEach(([path, controller]) => {
   router.post(`/${path}`, routeFunc(controller))
 })
+const storage = multer.diskStorage({
+  destination: function(req, file, cb){
+    const uploadIcon = '/var/icon';
+    if(fs.existsSync(uploadIcon)){
+      fs.mkdirSync(uploadIcon);
+    }
+    cb(null,uploadIcon)
+  },
+  filename: function (req, file,cb){
+    (cb, file.originalname);
+  }
+})
 
 const upload = multer({storage:storage})
 
@@ -80,18 +92,7 @@ router.post('/upload', upload.single('icon'),(req,res)=>{
  * @param {string} keywords Page keywords
  */
 
-const storage = multer.diskStorage({
-  destination: function(req, file, cb){
-    const uploadIcon = '/var/icon';
-    if(fs.existsSync(uploadIcon)){
-      fs.mkdirSync(uploadIcon);
-    }
-    cb(null,uploadIcon)
-  },
-  filename: function (req, file,cb){
-    (cb, file.originalname);
-  }
-})
+
 
 function addRoute (address, method, title, description, keywords) {
   router.get(`/${address}`, async (req, res) => {
