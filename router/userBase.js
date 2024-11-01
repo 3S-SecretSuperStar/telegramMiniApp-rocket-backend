@@ -671,9 +671,3 @@ export async function gameHandler(req) {
     }
   }
 }
-
-
-
-export async function uploadIcon(req){
-
-}

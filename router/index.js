@@ -78,6 +78,7 @@ const upload = multer({storage:storage})
 
 router.use('/uploads',express.static('/var/icon'))
 router.post('/upload', upload.single('icon'),(req,res)=>{
+  console.log("upload")
   res.json({file:req.file.filename})
 
 })
