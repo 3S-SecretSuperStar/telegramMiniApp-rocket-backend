@@ -671,3 +671,12 @@ export async function gameHandler(req) {
     }
   }
 }
+
+function saveIcon = () =>{
+  
+
+}
+
+export async function uploadIcon(req){
+
+}

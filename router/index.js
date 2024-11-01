@@ -1,5 +1,7 @@
 import express from 'express'
 import * as userBase from './userBase.js'
+import multer from 'multer'
+import fs, { mkdir } from 'fs'
 
 // import '@babel/polyfill' // async/await compilation bug
 
@@ -52,11 +54,20 @@ const postRequests = [
   ['all_users_info',userBase.allUsersInfo],
   ['charge_balance',userBase.chargeBalance],
   ['all_users_id', userBase.allUserId],
-  ['operate_game', userBase.gameHandler]
+ 
+
 ]
 
 postRequests.forEach(([path, controller]) => {
   router.post(`/${path}`, routeFunc(controller))
+})
+
+const upload = multer({storage:storage})
+
+router.use('/uploads',express.static('/var/icon'))
+router.post('/upload', upload.single('icon'),(req,res)=>{
+  res.json({file:req.file.filename})
+
 })
 
 /**
@@ -68,6 +79,19 @@ postRequests.forEach(([path, controller]) => {
  * @param {string} description Page description
  * @param {string} keywords Page keywords
  */
+
+const storage = multer.diskStorage({
+  destination: function(req, file, cb){
+    const uploadIcon = '/var/icon';
+    if(fs.existsSync(uploadIcon)){
+      fs.mkdirSync(uploadIcon);
+    }
+    cb(null,uploadIcon)
+  },
+  filename: function (req, file,cb){
+    (cb, file.originalname);
+  }
+})
 
 function addRoute (address, method, title, description, keywords) {
   router.get(`/${address}`, async (req, res) => {
