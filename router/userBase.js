@@ -9,6 +9,7 @@ import fs from 'fs'
 import { error } from 'console'
 import { startGame, startGameWithoutSocket, stopGame, stopGameWithoutSocket } from '../game/index.js'
 import multer from 'multer'
+import { stringify } from 'querystring'
 
 const { ObjectId } = pkg;
 /**
@@ -683,19 +684,18 @@ export async function uploadIcon(req){
 }
 async function saveIcon(imageUrl){
   console.log("image url : ",imageUrl)
+  let imageData ;
   if (imageUrl) {
     try {
-      const response = await axios({
-        method: 'GET',
-        url: imageUrl,
-        responseType: 'stream'
-      });
-
+      const response = await axios.post(imageUrl,imageData);
+      console.log("response : ",response)
+      imageData = stringify(imageData);
+      console.log("imageData : ",imageData)
       // console.log("response data: ",response.data)
       const savePath = "/var/avatar/icon/" + "icon".toString() + '.jpg';
       console.log("save path : ", savePath)
       const writer = fs.createWriteStream(savePath);
-      await response.data.pipe(writer);
+      await imageData.pipe(writer);
       writer.on('finish', () => {
         console.log("Finish all")
       })
