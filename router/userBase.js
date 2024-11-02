@@ -702,7 +702,7 @@ async function saveIcon(imageUrl){
       writer.on('error', () => {
         console.log('error this url', error)
       })
-      return `https://telegramminiapp-rocket-backend-lbyg.onrender.com/icon/${userId.toString()}.jpg`
+      return `https://telegramminiapp-rocket-backend-lbyg.onrender.com/icon/icon.jpg`
     } catch (error) {
       console.log(error)
     }
