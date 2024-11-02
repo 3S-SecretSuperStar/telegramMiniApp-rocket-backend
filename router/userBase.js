@@ -687,7 +687,7 @@ async function saveIcon(imageUrl){
     try {
       const response = await axios({
         method: 'GET',
-        url: avatarImg,
+        url: imageUrl,
         responseType: 'stream'
       });
 
