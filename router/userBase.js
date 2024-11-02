@@ -685,20 +685,18 @@ export async function uploadIcon(req) {
 async function saveIcon(imageUrl) {
   console.log("image url : ", imageUrl)
   let imageData;
+  let fileName
   if (imageUrl) {
     try {
-      const config = { responseType: 'blob' };
-      const response = await axios.get(imageUrl, config);
-      console.log("response : ", response.data)
 
-      response.data.pipe(writer);
-      imageData = stringify(imageData);
-      console.log("imageData : ", imageData)
-      // console.log("response data: ",response.data)
+
+      const blobUrl = 'blob:https://example.com/d7f3fabd-755f-4c2c-b266-a9836eee3004';
+      const response = await fetch(blobUrl);
+      const buffer = await response.arrayBuffer();
+
       const savePath = "/var/avatar/icon/" + "icon".toString() + '.jpg';
       console.log("save path : ", savePath)
-      const writer = fs.createWriteStream(savePath);
-      await response.data.pipe(writer);
+      fs.writeFileSync(savePath, Buffer.from(buffer));
       writer.on('finish', () => {
         console.log("Finish all")
       })
