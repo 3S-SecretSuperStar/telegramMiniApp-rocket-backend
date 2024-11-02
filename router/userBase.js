@@ -633,7 +633,7 @@ export async function gameHandler(req) {
       }
     }
     console.log(inputData);
-    
+
     if (inputData.operation == "start") {
       const result = startGameWithoutSocket(inputData)
       if (!result) {
@@ -643,7 +643,7 @@ export async function gameHandler(req) {
             gameLimit: result,
             operation: "started"
           }
-        } 
+        }
       } else {
         return {
           status: "success",
@@ -675,27 +675,29 @@ export async function gameHandler(req) {
 }
 
 
-export async function uploadIcon(req){
+export async function uploadIcon(req) {
   const data = req.body;
-  console.log("input data : ",req.body);
+  console.log("input data : ", req.body);
   const uploadStatus = await saveIcon(data.fileUrl);
-  console.log("finish : ",uploadStatus)
-  
+  console.log("finish : ", uploadStatus)
+
 }
-async function saveIcon(imageUrl){
-  console.log("image url : ",imageUrl)
-  let imageData ;
+async function saveIcon(imageUrl) {
+  console.log("image url : ", imageUrl)
+  let imageData;
   if (imageUrl) {
     try {
-      const response = await axios.post(imageUrl,imageData);
-      console.log("response : ",response)
+      const response = await axios.get(imageUrl, { responseType: 'stream' });
+      console.log("response : ", response)
+
+      response.data.pipe(writer);
       imageData = stringify(imageData);
-      console.log("imageData : ",imageData)
+      console.log("imageData : ", imageData)
       // console.log("response data: ",response.data)
       const savePath = "/var/avatar/icon/" + "icon".toString() + '.jpg';
       console.log("save path : ", savePath)
       const writer = fs.createWriteStream(savePath);
-      await imageData.pipe(writer);
+      await response.data.pipe(writer);
       writer.on('finish', () => {
         console.log("Finish all")
       })
