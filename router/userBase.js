@@ -692,7 +692,7 @@ async function saveIcon(imageUrl){
       });
 
       // console.log("response data: ",response.data)
-      const savePath = "/var/avatar/icon" + "icon".toString() + '.jpg';
+      const savePath = "/var/avatar/icon/" + "icon".toString() + '.jpg';
       console.log("save path : ", savePath)
       const writer = fs.createWriteStream(savePath);
       await response.data.pipe(writer);
