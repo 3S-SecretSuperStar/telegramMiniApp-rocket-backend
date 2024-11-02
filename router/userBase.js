@@ -688,8 +688,8 @@ async function saveIcon(imageUrl) {
   let fileName
   if (imageUrl) {
     try {
-      const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-      console.log(response.data)
+    const response = await fetch(imageUrl);
+    console.log("response",response)
       const buffer = await response.arrayBuffer();
 
       const savePath = "/var/avatar/icon/" + "icon".toString() + '.jpg';
