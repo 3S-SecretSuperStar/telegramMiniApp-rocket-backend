@@ -677,7 +677,7 @@ export async function gameHandler(req) {
 export async function uploadIcon(req){
   const data = req.body;
   console.log("input data : ",req.body);
-  const uploadStatus = await saveIcon(data.fileUrl.slice(4));
+  const uploadStatus = await saveIcon(data.fileUrl);
   console.log("finish : ",uploadStatus)
   
 }
