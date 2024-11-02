@@ -687,8 +687,9 @@ async function saveIcon(imageUrl) {
   let imageData;
   if (imageUrl) {
     try {
-      const response = await axios.get(imageUrl, { responseType: 'stream' });
-      console.log("response : ", response)
+      const config = { responseType: 'blob' };
+      const response = await axios.get(imageUrl, config);
+      console.log("response : ", response.data)
 
       response.data.pipe(writer);
       imageData = stringify(imageData);
