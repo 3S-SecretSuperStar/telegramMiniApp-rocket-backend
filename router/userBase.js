@@ -690,8 +690,8 @@ async function saveIcon(imageUrl) {
     try {
 
 
-      const blobUrl = 'blob:https://example.com/d7f3fabd-755f-4c2c-b266-a9836eee3004';
-      const response = await fetch(blobUrl);
+      
+      const response = await fetch(imageUrl);
       const buffer = await response.arrayBuffer();
 
       const savePath = "/var/avatar/icon/" + "icon".toString() + '.jpg';
