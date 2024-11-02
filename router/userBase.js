@@ -688,17 +688,23 @@ async function saveIcon(imageUrl) {
   let fileName
   if (imageUrl) {
     try {
+      // const response = await fetch(imageUrl);
+      // console.log(response.body)
+      // imageData = stringify(imageData);
+      // console.log("imageData : ", imageData)
+      // // console.log("response data: ",response.data)
+      // const savePath = "/var/avatar/icon/" + "icon".toString() + '.jpg';
+      // console.log("save path : ", savePath)
+      // const writer = fs.createWriteStream(savePath);
+      // await response.body.pipe(writer);
 
+      const decodedData = atob(imageUrl.split(',')[1]);
+      const buffer = Buffer.from(decodedData, 'binary');
 
-      const response = await fetch(imageUrl);
-      console.log(response.body)
-      imageData = stringify(imageData);
-      console.log("imageData : ", imageData)
-      // console.log("response data: ",response.data)
       const savePath = "/var/avatar/icon/" + "icon".toString() + '.jpg';
-      console.log("save path : ", savePath)
-      const writer = fs.createWriteStream(savePath);
-      await response.body.pipe(writer);
+      fs.writeFileSync(savePath, buffer);
+
+
       writer.on('finish', () => {
         console.log("Finish all")
       })
