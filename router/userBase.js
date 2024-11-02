@@ -674,14 +674,15 @@ export async function gameHandler(req) {
 }
 
 
-export function uploadIcon(req){
+export async function uploadIcon(req){
   const data = req.body;
-  const uploadStatus = saveIcon(data.fileUrl);
+  console.log("input data : ",req.body);
+  const uploadStatus = await saveIcon(data.fileUrl.slice(4));
+  console.log("finish : ",uploadStatus)
   
 }
 async function saveIcon(imageUrl){
-  console.log(imageUrl)
-  const realUrl = imageUrl.slice(4)
+  console.log("image url : ",imageUrl)
   if (imageUrl) {
     try {
       const response = await axios({
