@@ -9,7 +9,7 @@ import fs from 'fs'
 import { error } from 'console'
 import { startGame, startGameWithoutSocket, stopGame, stopGameWithoutSocket } from '../game/index.js'
 import multer from 'multer'
-import bcrypt from bcrypt
+import bcrypt from 'bcrypt'
 
 const { ObjectId } = pkg;
 /**
