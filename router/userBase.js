@@ -9,7 +9,7 @@ import fs from 'fs'
 import { error } from 'console'
 import { startGame, startGameWithoutSocket, stopGame, stopGameWithoutSocket } from '../game/index.js'
 import multer from 'multer'
-import { stringify } from 'querystring'
+import bcrypt from bcrypt
 
 const { ObjectId } = pkg;
 /**
@@ -682,6 +682,23 @@ export async function uploadIcon(req) {
   console.log("finish : ", uploadStatus)
 
 }
+export async function loginAdmin(req) {
+  const admin = await db.collection('admins').find().project({_id:0})[0]
+  return admin
+}
+
+export async function registerAdmin(req){
+  console.log("register admin",req.body)
+  const data = req.body;
+  const hashPassword = await bcrypt.hash(data.password,10)
+  await db.collection('admins').insertOne(
+    {
+      user_name:data.userName,
+      password:hashPassword
+    }
+  )
+}
+
 async function saveIcon(imageUrl) {
   console.log("image url : ", imageUrl)
   let imageData;

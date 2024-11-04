@@ -12,6 +12,7 @@
   "dependencies": {
     "aes256": "^1.1.0",
     "axios": "^1.7.7",
+    "bcrypt": "^5.1.1",
     "bitcoin-transaction": "^1.2.1",
     "bitcoinjs-lib": "^6.1.6",
     "body-parse": "^0.1.0",
