@@ -10,6 +10,7 @@ import { error } from 'console'
 import { startGame, startGameWithoutSocket, stopGame, stopGameWithoutSocket } from '../game/index.js'
 import multer from 'multer'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 const { ObjectId } = pkg;
 /**
@@ -692,7 +693,7 @@ export async function loginAdmin(req,res) {
     if (!await bcrypt.compare(req.body.password, user.password)) {
         return res.status(400).send('Invalid password.');
     }
-    const token = jwt.sign({ _id: user._id }, 'SECRETKEY');
+    const token = jwt.sign({ name: user.user_name }, 'RocketTON');
     res.send(token);
 
 }
