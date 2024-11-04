@@ -684,7 +684,7 @@ export async function uploadIcon(req) {
 }
 export async function loginAdmin(req,res) {
 
-  const user = await db.findOne({ user_name: req.body.userName });
+  const user = await db.collection('admins').findOne({ user_name: req.body.userName });
   console.log("user",user)
     if (!user) {
         return res.status(400).send('User not found.');
