@@ -683,10 +683,18 @@ export async function uploadIcon(req) {
 
 }
 export async function loginAdmin(req,res) {
-  console.log(req.body)
-  const admin = await db.collection('admins').find({},{_id:0})
-  console.log(admin)
-  return admin
+
+  const user = await db.findOne({ user_name: req.body.userName });
+  console.log("user",user)
+    if (!user) {
+        return res.status(400).send('User not found.');
+    }
+    if (!await bcrypt.compare(req.body.password, user.password)) {
+        return res.status(400).send('Invalid password.');
+    }
+    const token = jwt.sign({ _id: user._id }, 'SECRETKEY');
+    res.send(token);
+
 }
 
 export async function registerAdmin(req,res){
