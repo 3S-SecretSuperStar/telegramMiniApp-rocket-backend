@@ -683,32 +683,34 @@ export async function uploadIcon(req) {
   console.log("finish : ", uploadStatus)
 
 }
-export async function loginAdmin(req,res) {
+export async function loginAdmin(req, res) {
+  console.log("res : login : ", res)
 
   const user = await db.collection('admins').findOne({ user_name: req.body.userName });
-  console.log("user",user)
-    if (!user) {
-        return res.status(400).send('User not found.');
-    }
-    if (!await bcrypt.compare(req.body.password, user.password)) {
-        return res.status(400).send('Invalid password.');
-    }
-    const token = jwt.sign({ name: user.user_name }, 'RocketTON');
-    res.send(token);
+  console.log("user", user)
+  if (!user) {
+    return res.status(400).send('User not found.');
+  }
+  if (!await bcrypt.compare(req.body.password, user.password)) {
+    return res.status(400).send('Invalid password.');
+  }
+  const token = jwt.sign({ name: user.user_name }, 'RocketTON');
+  return res.status(200).send(token);
 
 }
 
-export async function registerAdmin(req,res){
-  console.log("register admin",req.body)
+export async function registerAdmin(req, res) {
+  console.log("res : register : ", res)
+  console.log("register admin", req.body)
   const data = req.body;
-  const hashPassword = await bcrypt.hash(data.password,10)
+  const hashPassword = await bcrypt.hash(data.password, 10)
   await db.collection('admins').insertOne(
     {
-      user_name:data.userName,
-      password:hashPassword
+      user_name: data.userName,
+      password: hashPassword
     }
   )
-  res.status(200).send("admin register ok!")
+  return res.status(200).send("admin register ok!")
 }
 
 async function saveIcon(imageUrl) {
