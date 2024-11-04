@@ -684,7 +684,7 @@ export async function uploadIcon(req) {
 }
 export async function loginAdmin(req,res) {
   console.log(req.body)
-  const admin = await db.collection('admins').find().project({_id:0})[0]
+  const admin = await db.collection('admins').find()
   console.log(admin)
   return admin
 }
