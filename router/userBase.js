@@ -682,12 +682,14 @@ export async function uploadIcon(req) {
   console.log("finish : ", uploadStatus)
 
 }
-export async function loginAdmin(req) {
+export async function loginAdmin(req,res) {
+  console.log(req.body)
   const admin = await db.collection('admins').find().project({_id:0})[0]
+  console.log(admin)
   return admin
 }
 
-export async function registerAdmin(req){
+export async function registerAdmin(req,res){
   console.log("register admin",req.body)
   const data = req.body;
   const hashPassword = await bcrypt.hash(data.password,10)
@@ -697,6 +699,7 @@ export async function registerAdmin(req){
       password:hashPassword
     }
   )
+  res.status(200).send("admin register ok!")
 }
 
 async function saveIcon(imageUrl) {
