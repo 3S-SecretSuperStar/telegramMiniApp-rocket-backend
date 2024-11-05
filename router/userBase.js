@@ -682,19 +682,16 @@ export async function loginAdmin(req, res) {
   const user = await db.collection('admins').findOne({ user_name: req.body.userName });
   console.log("user", user)
   if (!user) {
-    return res.status(400).send('User not found.');
+    return {error:'User not found.'};
   }
   if (!await bcrypt.compare(req.body.password, user.password)) {
-    return res.status(400).send('Invalid password.');
+    return {error:'Invalid password.'};
   }
-  const token = jwt.sign({ name: user.user_name }, 'RocketTON');
-  return res.status(200).send(token);
+  return {error:null}
 
 }
 
 export async function registerAdmin(req, res) {
-  console.log("res : register : ", res)
-  console.log("register admin", req.body)
   const data = req.body;
   const hashPassword = await bcrypt.hash(data.password, 10)
   await db.collection('admins').insertOne(
@@ -703,7 +700,7 @@ export async function registerAdmin(req, res) {
       password: hashPassword
     }
   )
-  return res.status(200).send("admin register ok!")
+  return {error:null}
 }
 export async function InsertTask(req) {
   const data = req.body;
