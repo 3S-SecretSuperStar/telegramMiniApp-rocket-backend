@@ -676,8 +676,7 @@ export async function gameHandler(req) {
 }
 
 
-export async function loginAdmin(req, res) {
-  console.log("res : login : ", res)
+export async function loginAdmin(req) {
 
   const user = await db.collection('admins').findOne({ user_name: req.body.userName });
   console.log("user", user)
