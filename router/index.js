@@ -57,6 +57,7 @@ const postRequests = [
   ['insert_task', userBase.InsertTask],
   ['login_admin', userBase.loginAdmin],
   ['register_admin', userBase.registerAdmin],
+  ['get_admin_taskts', userBase.getAdminTasks],
  
 
 ]
