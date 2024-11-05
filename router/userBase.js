@@ -677,20 +677,22 @@ export async function gameHandler(req) {
 
 
 export async function loginAdmin(req) {
+  const data = req.body;
+  console.log("login admin",data)
 
-  const user = await db.collection('admins').findOne({ user_name: req.body.userName });
+  const user = await db.collection('admins').findOne({ user_name: data.userName });
   console.log("user", user)
   if (!user) {
     return {err:'User not found.'};
   }
-  if (!await bcrypt.compare(req.body.password, user.password)) {
+  if (!await bcrypt.compare(data.password, user.password)) {
     return {err:'Invalid password.'};
   }
   return {err:null}
 
 }
 
-export async function registerAdmin(req, res) {
+export async function registerAdmin(req) {
   const data = req.body;
   const hashPassword = await bcrypt.hash(data.password, 10)
   await db.collection('admins').insertOne(
@@ -699,7 +701,7 @@ export async function registerAdmin(req, res) {
       password: hashPassword
     }
   )
-  return {error:null}
+  return {err:null}
 }
 export async function InsertTask(req) {
   const data = req.body;
