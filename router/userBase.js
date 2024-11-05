@@ -11,7 +11,6 @@ import { startGame, startGameWithoutSocket, stopGame, stopGameWithoutSocket } fr
 import multer from 'multer'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { ObjectId } from 'mongodb'
 
 const { ObjectId } = pkg;
 /**
