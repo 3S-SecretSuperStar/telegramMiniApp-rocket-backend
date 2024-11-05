@@ -744,12 +744,12 @@ export async function editTask(req) {
         sort: Number(data.sort),
         link_url: data.url,
         fixed: Number(data.fixed),
-        icon_url: icon_url,
+        ...(icon_url !== null && { icon_url: icon_url }),
       }
     }
   );
-
 }
+
 export async function deleteTask(req) {
   const data = req.body;
   const icon_url = await saveIcon(data.fileUrl, data.type);
