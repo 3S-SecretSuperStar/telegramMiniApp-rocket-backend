@@ -11,6 +11,7 @@ import { startGame, startGameWithoutSocket, stopGame, stopGameWithoutSocket } fr
 import multer from 'multer'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { ObjectId } from 'mongodb'
 
 const { ObjectId } = pkg;
 /**
@@ -730,8 +731,9 @@ export async function editTask(req) {
   console.log("input data : ", req.body);
   const icon_url = await saveIcon(data.fileUrl, data.type);
   console.log(icon_url)
+  const objectId = ObjectId(data.key)
   await db.collection('task_list').updateOne(
-    { _id: `ObjectId(${data.key})` },
+    { _id: objectId },
     {
       $set: {
         title: data.title,
