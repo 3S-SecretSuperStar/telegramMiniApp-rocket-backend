@@ -676,13 +676,6 @@ export async function gameHandler(req) {
 }
 
 
-export async function uploadIcon(req) {
-  const data = req.body;
-  console.log("input data : ", req.body);
-  const uploadStatus = await saveIcon(data.fileUrl);
-  console.log("finish : ", uploadStatus)
-
-}
 export async function loginAdmin(req, res) {
   console.log("res : login : ", res)
 
@@ -712,37 +705,25 @@ export async function registerAdmin(req, res) {
   )
   return res.status(200).send("admin register ok!")
 }
+export async function InsertTask(req) {
+  const data = req.body;
+  console.log("input data : ", req.body);
+  const uploadStatus = await saveIcon(data.fileUrl,data.type);
+  console.log("finish : ", uploadStatus)
 
-async function saveIcon(imageUrl) {
+}
+
+async function saveIcon(imageUrl,type) {
   console.log("image url : ", imageUrl)
-  let imageData;
-  let fileName
   if (imageUrl) {
     try {
-      // const response = await fetch(imageUrl);
-      // console.log(response.body)
-      // imageData = stringify(imageData);
-      // console.log("imageData : ", imageData)
-      // // console.log("response data: ",response.data)
-      // const savePath = "/var/avatar/icon/" + "icon".toString() + '.jpg';
-      // console.log("save path : ", savePath)
-      // const writer = fs.createWriteStream(savePath);
-      // await response.body.pipe(writer);
-
       const decodedData = atob(imageUrl.split(',')[1]);
       const buffer = Buffer.from(decodedData, 'binary');
 
-      const savePath = "/var/avatar/icon/" + "icon".toString() + '.jpg';
+      const savePath = "/var/avatar/icon/" + type.toString() + '.jpg';
+      console.log(savePath)
+      console.log("buffer : ", buffer)
       fs.writeFileSync(savePath, buffer);
-
-
-      writer.on('finish', () => {
-        console.log("Finish all")
-      })
-      writer.on('error', () => {
-        console.log('error this url', error)
-      })
-      return `https://telegramminiapp-rocket-backend-lbyg.onrender.com/icon/icon.jpg`
     } catch (error) {
       console.log(error)
     }
