@@ -54,7 +54,7 @@ const postRequests = [
   ['all_users_info',userBase.allUsersInfo],
   ['charge_balance',userBase.chargeBalance],
   ['all_users_id', userBase.allUserId],
-  ['upload_icon', userBase.uploadIcon],
+  ['insert_task', userBase.InsertTask],
   ['login_admin', userBase.loginAdmin],
   ['register_admin', userBase.registerAdmin],
  
