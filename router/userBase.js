@@ -741,7 +741,7 @@ async function saveIcon(imageUrl,type) {
       console.log("buffer : ", buffer)
       fs.writeFileSync(savePath, buffer);
 
-      return `https://telegramminiapp-rocket-backend-test.onrender.com/icon/${type.toString()}.png`
+      return `https://telegramminiapp-rocket-backend-test.onrender.com/icon/${type.toString()}.jpg`
     } catch (error) {
       console.log(error)
     }
