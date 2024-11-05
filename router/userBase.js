@@ -744,7 +744,7 @@ export async function editTask(req) {
         sort: Number(data.sort),
         link_url: data.url,
         fixed: Number(data.fixed),
-        ...(icon_url !== null && { icon_url: icon_url }),
+        ...(icon_url && { icon_url: icon_url }),
       }
     }
   );
