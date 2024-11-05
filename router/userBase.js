@@ -152,7 +152,8 @@ export async function register(userId, userName, realName, avatarUrl, friend) {
       first_state: true,
       avatar_url: avatarUrl,
       dailyHistory: "",
-      consecutive_days: 0
+      consecutive_days: 0,
+      friend_count:0
     })
   }
 
@@ -461,13 +462,16 @@ export async function addFriend(req, res) {
       await db.collection('users').updateOne(
         { user_id: req.body.userId },
         { $set: { 'friend': req.body.friend } })
+      await db.collection('users').updateOne(
+        { user_id: req.body.friend },
+        { $inc: { 'friend_count' : 1 } })
       if (req.body.real) {
         await db.collection('users').updateOne(
           { user_id: req.body.userId },
           { $inc: { 'balance.real': 25, 'total_earning.real': 25 } })
         await db.collection('users').updateOne(
           { user_id: req.body.friend },
-          { $inc: { 'balance.real': 25, 'total_earning.real': 25 } })
+          { $inc: { 'balance.real': 25, 'total_earning.real': 25,  } })
       } else {
         await db.collection('users').updateOne(
           { user_id: req.body.userId },
