@@ -1,7 +1,7 @@
-import express from 'express'
-import * as userBase from './userBase.js'
-import multer from 'multer'
-import fs, { mkdir } from 'fs'
+import express from 'express';
+import * as userBase from './userBase.js';
+import multer from 'multer';
+import fs, { mkdir } from 'fs';
 
 // import '@babel/polyfill' // async/await compilation bug
 
@@ -54,14 +54,13 @@ const postRequests = [
   ['all_users_info',userBase.allUsersInfo],
   ['charge_balance',userBase.chargeBalance],
   ['all_users_id', userBase.allUserId],
+  ['operate_game', userBase.gameHandler],
   ['insert_task', userBase.InsertTask],
   ['edit_task', userBase.editTask],
   ['delete_task', userBase.deleteTask],
   ['login_admin', userBase.loginAdmin],
   ['register_admin', userBase.registerAdmin],
   ['get_admin_tasks', userBase.getAdminTasks],
- 
-
 ]
 
 postRequests.forEach(([path, controller]) => {
@@ -77,8 +76,6 @@ postRequests.forEach(([path, controller]) => {
  * @param {string} description Page description
  * @param {string} keywords Page keywords
  */
-
-
 
 function addRoute (address, method, title, description, keywords) {
   router.get(`/${address}`, async (req, res) => {
