@@ -748,6 +748,21 @@ export async function editTask(req) {
   );
 
 }
+export async function deleteTask(req) {
+  const data = req.body;
+  const icon_url = await saveIcon(data.fileUrl, data.type);
+  const savePath = "/var/avatar/icon/" + data.type.toString() + '.jpg';
+  fs.unlink(savePath,(err)=>{
+    if(err){
+      console.log("delete file",err)
+      return
+    }
+  })
+
+  await db.collection('task_list').deleteOne(
+    { _id: new ObjectId(data.key) }  );
+
+}
 export async function getAdminTasks(req) {
   const data = await db.collection('task_list').find().toArray();
   return { tasks: data };
