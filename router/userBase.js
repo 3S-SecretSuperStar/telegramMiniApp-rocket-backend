@@ -731,7 +731,7 @@ export async function editTask(req) {
   const icon_url = await saveIcon(data.fileUrl, data.type);
   console.log(icon_url)
   await db.collection('task_list').updateOne(
-    {_id:data.key},
+    { _id: `ObjectId(${data.key})` },
     {
       $set: {
         title: data.title,
@@ -745,7 +745,7 @@ export async function editTask(req) {
         icon_url: icon_url,
       }
     }
-  )
+  );
 
 }
 export async function getAdminTasks(req) {
