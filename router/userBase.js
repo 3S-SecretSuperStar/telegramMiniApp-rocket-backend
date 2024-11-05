@@ -681,12 +681,12 @@ export async function loginAdmin(req) {
   const user = await db.collection('admins').findOne({ user_name: req.body.userName });
   console.log("user", user)
   if (!user) {
-    return {error:'User not found.'};
+    return {err:'User not found.'};
   }
   if (!await bcrypt.compare(req.body.password, user.password)) {
-    return {error:'Invalid password.'};
+    return {err:'Invalid password.'};
   }
-  return {error:null}
+  return {err:null}
 
 }
 
