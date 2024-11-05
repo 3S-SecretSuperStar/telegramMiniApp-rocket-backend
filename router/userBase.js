@@ -730,9 +730,8 @@ export async function editTask(req) {
   console.log("input data : ", req.body);
   const icon_url = await saveIcon(data.fileUrl, data.type);
   console.log(icon_url)
-  const objectId = ObjectId(data.key)
   await db.collection('task_list').updateOne(
-    { _id: objectId },
+    { _id: new ObjectId(data.key) },
     {
       $set: {
         title: data.title,
