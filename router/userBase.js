@@ -713,7 +713,7 @@ export async function InsertTask(req) {
   await db.collection('task_list').insertOne(
     {
       title:data.title,
-      amount:data.amount,
+      amount:Number(data.amount),
       type:data.type,
       count:Number(data.count),
       index:Number(data.index),
@@ -726,7 +726,7 @@ export async function InsertTask(req) {
 
 }
 export async function getAdminTasks (req){
-  const data = await db.collection('task_list').find().toArray();
+  const data = await db.collection('task_list').find().project({ _id: 0 }).toArray();
   return {tasks:data};
 }
 async function saveIcon(imageUrl,type) {
