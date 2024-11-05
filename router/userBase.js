@@ -708,22 +708,27 @@ export async function registerAdmin(req, res) {
 export async function InsertTask(req) {
   const data = req.body;
   console.log("input data : ", req.body);
-  await saveIcon(data.fileUrl,data.type);
+  const icon_url = await saveIcon(data.fileUrl,data.type);
+  console.log(icon_url)
   await db.collection('task_list').insertOne(
     {
       title:data.title,
       amount:data.amount,
       type:data.type,
-      count:data.count,
-      index:data.index,
-      sort:data.sort,
+      count:Number(data.count),
+      index:Number(data.index),
+      sort:Number(data.sort),
       link_url:data.url,
-      fixed:data.fixed
+      fixed:Number(data.fixed),
+      icon_url: icon_url,
     }
   )
 
 }
-
+export async function getAdminTasks (req){
+  const data = await db.collection('task_list').find().toArray();
+  return data;
+}
 async function saveIcon(imageUrl,type) {
   console.log("image url : ", imageUrl)
   if (imageUrl) {
@@ -735,6 +740,8 @@ async function saveIcon(imageUrl,type) {
       console.log(savePath)
       console.log("buffer : ", buffer)
       fs.writeFileSync(savePath, buffer);
+
+      return `https://telegramminiapp-rocket-backend-test.onrender.com/icon/${type.toString()}.png`
     } catch (error) {
       console.log(error)
     }
