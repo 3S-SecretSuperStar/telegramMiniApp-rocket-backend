@@ -708,8 +708,19 @@ export async function registerAdmin(req, res) {
 export async function InsertTask(req) {
   const data = req.body;
   console.log("input data : ", req.body);
-  const uploadStatus = await saveIcon(data.fileUrl,data.type);
-  console.log("finish : ", uploadStatus)
+  await saveIcon(data.fileUrl,data.type);
+  await db.collection('task_list').insertOne(
+    {
+      title:data.title,
+      amount:data.amount,
+      type:data.type,
+      count:data.count,
+      index:data.index,
+      sort:data.sort,
+      link_url:data.url,
+      fixed:data.fixed
+    }
+  )
 
 }
 
