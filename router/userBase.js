@@ -106,7 +106,7 @@ export async function endSession(userId) {
 export async function register(userId, userName, realName, avatarUrl, friend) {
   validateName(realName)
   const isUnique = await isNameUnique(userId)
-  console.log("unique:", isUnique);
+  // console.log("unique:", isUnique);
   if (isUnique) {
     await db.collection('users').insertOne({
       registrationDateTime: new Date(),
@@ -186,19 +186,19 @@ export async function saveAvatar(avatarImg, userId) {
         url: avatarImg,
         responseType: 'stream'
       });
-      console.log(avatarImg)
+      // console.log(avatarImg)
       // console.log("response data: ",response.data)
       const savePath = "/var/avatar/" + userId.toString() + '.jpg';
-      console.log("save path : ", savePath)
+      // console.log("save path : ", savePath)
       const writer = fs.createWriteStream(savePath);
       await response.data.pipe(writer);
       writer.on('finish', () => {
-        console.log("Finish all")
+        // console.log("Finish all")
       })
       writer.on('error', () => {
         console.log('error this url', error)
       })
-      console.log("user String", userId.toString())
+      // console.log("user String", userId.toString())
       return `https://telegramminiapp-rocket-backend-lbyg.onrender.com/avatar/${userId.toString()}.jpg`
     } catch (error) {
       console.log(error)
@@ -217,7 +217,7 @@ export async function usersInfo(req) {
   await register(req.body.userId, req.body.userName, req.body.realName, avatarUrl, "No friend")
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
   const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, task: 1, dailyHistory: 1 }).toArray()
-  console.log("length of fetch data:", data.length)
+  // console.log("length of fetch data:", data.length)
 
   const userId = parseInt(req.body.userId); // Parse userId only once
 
@@ -274,7 +274,7 @@ export async function gameHistory(req) {
 
 
 export async function checkFirst(req) {
-  console.log(req.body.userId)
+  // console.log(req.body.userId)
   db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'first_state': "false" } })
 }
 
@@ -302,7 +302,7 @@ export async function checkDeposits(req) {
           tx: transactionHex
         })
         .then((res) => {
-          console.log(`statusCode: ${res.statusCode}`)
+          // console.log(`statusCode: ${res.statusCode}`)
           // console.log(res)
 
           writeDepositDataToDB(i)
@@ -443,7 +443,7 @@ export async function taskBalance(req) {
 
 export async function addFriend(req, res) {
   const avatarUrl = await saveAvatar(req.body.userAvatarUrl, req.body.userId)
-  console.log("avatar add Friend: ", avatarUrl);
+  // console.log("avatar add Friend: ", avatarUrl);
   await register(req.body.userId, req.body.userName, req.body.realName, avatarUrl, "");
 
   try {
@@ -513,7 +513,7 @@ export async function getTask(req) {
 export async function updateAvatar(req) {
   try {
     const avatarUrl = await saveAvatar(req.body.userAvatarUrl, req.body.userId)
-    console.log("avatar updateAvatar : ", avatarUrl);
+    // console.log("avatar updateAvatar : ", avatarUrl);
     const updateState = await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'avatar_url': avatarUrl } });
     return updateState
   } catch (error) {
@@ -531,7 +531,7 @@ export async function checkDailyReward(req) {
 }
 
 export async function performDailyReward(req) {
-  console.log("perform daily reward", req.body)
+  // console.log("perform daily reward", req.body)
   try {
     // console.log("performDailyReward ",req.body)
 
@@ -546,7 +546,7 @@ export async function performDailyReward(req) {
 
 export function addPerformList(req) {
   const data = req.body;
-  console.log("add perform task : ", data)
+  // console.log("add perform task : ", data)
   writeTask(data.userId, data.performTask, data.isReal)
 }
 
@@ -583,8 +583,8 @@ async function writeTask(userId, performTask, isReal) {
 
 export async function chargeBalance(req) {
   const inputData = req.body;
-  console.log(" charge balance user id", inputData.userId)
-  console.log(" charge balance amount:", inputData.amount)
+  // console.log(" charge balance user id", inputData.userId)
+  // console.log(" charge balance amount:", inputData.amount)
   await db.collection('users').updateOne(
     { user_id: inputData.userId },
     { $inc: { 'balance.virtual': parseFloat((inputData.amount).toFixed(2)) } })
@@ -612,7 +612,7 @@ export async function gameHandler(req) {
       }
     }
     const userBalance = await checkBalance(inputData.userId, inputData.bet, inputData.isReal);
-    console.log("userBalance", userBalance);
+    // console.log("userBalance", userBalance);
     if (userBalance <= 0) {
       return {
         status: "error",
@@ -633,7 +633,7 @@ export async function gameHandler(req) {
         }
       }
     }
-    console.log(inputData);
+    // console.log(inputData);
 
     if (inputData.operation == "start") {
       const result = startGameWithoutSocket(inputData)
@@ -678,10 +678,10 @@ export async function gameHandler(req) {
 
 export async function loginAdmin(req) {
   const data = req.body;
-  console.log("login admin",data)
+  // console.log("login admin",data)
 
   const user = await db.collection('admins').findOne({ user_name: data.userName });
-  console.log("user", user)
+  // console.log("user", user)
   if (!user) {
     return {err:'User not found.'};
   }
@@ -705,9 +705,9 @@ export async function registerAdmin(req) {
 }
 export async function InsertTask(req) {
   const data = req.body;
-  console.log("input data : ", req.body);
+  // console.log("input data : ", req.body);
   const icon_url = await saveIcon(data.fileUrl, data.type);
-  console.log(icon_url)
+  // console.log(icon_url)
   await db.collection('task_list').insertOne(
     {
       title: data.title,
@@ -725,9 +725,9 @@ export async function InsertTask(req) {
 }
 export async function editTask(req) {
   const data = req.body;
-  console.log("input data : ", req.body);
+  // console.log("input data : ", req.body);
   const icon_url = await saveIcon(data.fileUrl, data.type);
-  console.log(icon_url)
+  // console.log(icon_url)
   await db.collection('task_list').updateOne(
     { _id: new ObjectId(data.key) },
     {
@@ -766,15 +766,15 @@ export async function getAdminTasks(req) {
   return { tasks: data };
 }
 async function saveIcon(imageUrl, type) {
-  console.log("image url : ", imageUrl)
+  // console.log("image url : ", imageUrl)
   if (imageUrl) {
     try {
       const decodedData = atob(imageUrl.split(',')[1]);
       const buffer = Buffer.from(decodedData, 'binary');
 
       const savePath = "/var/avatar/icon/" + type.toString() + '.jpg';
-      console.log(savePath)
-      console.log("buffer : ", buffer)
+      // console.log(savePath)
+      // console.log("buffer : ", buffer)
       fs.writeFileSync(savePath, buffer);
 
       return `https://telegramminiapp-rocket-backend-test.onrender.com/icon/${type.toString()}.jpg`
