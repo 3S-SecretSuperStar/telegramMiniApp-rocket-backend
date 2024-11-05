@@ -708,28 +708,51 @@ export async function registerAdmin(req, res) {
 export async function InsertTask(req) {
   const data = req.body;
   console.log("input data : ", req.body);
-  const icon_url = await saveIcon(data.fileUrl,data.type);
+  const icon_url = await saveIcon(data.fileUrl, data.type);
   console.log(icon_url)
   await db.collection('task_list').insertOne(
     {
-      title:data.title,
-      amount:Number(data.amount),
-      type:data.type,
-      count:Number(data.count),
-      index:Number(data.index),
-      sort:Number(data.sort),
-      link_url:data.url,
-      fixed:Number(data.fixed),
+      title: data.title,
+      amount: Number(data.amount),
+      type: data.type,
+      count: Number(data.count),
+      index: Number(data.index),
+      sort: Number(data.sort),
+      link_url: data.url,
+      fixed: Number(data.fixed),
       icon_url: icon_url,
     }
   )
 
 }
-export async function getAdminTasks (req){
-  const data = await db.collection('task_list').find().project({ _id: 0 }).toArray();
-  return {tasks:data};
+export async function editTask(req) {
+  const data = req.body;
+  console.log("input data : ", req.body);
+  const icon_url = await saveIcon(data.fileUrl, data.type);
+  console.log(icon_url)
+  await db.collection('task_list').updateOne(
+    {_id:data.key},
+    {
+      $set: {
+        title: data.title,
+        amount: Number(data.amount),
+        type: data.type,
+        count: Number(data.count),
+        index: Number(data.index),
+        sort: Number(data.sort),
+        link_url: data.url,
+        fixed: Number(data.fixed),
+        icon_url: icon_url,
+      }
+    }
+  )
+
 }
-async function saveIcon(imageUrl,type) {
+export async function getAdminTasks(req) {
+  const data = await db.collection('task_list').find().toArray();
+  return { tasks: data };
+}
+async function saveIcon(imageUrl, type) {
   console.log("image url : ", imageUrl)
   if (imageUrl) {
     try {
