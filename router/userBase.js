@@ -727,7 +727,7 @@ export async function InsertTask(req) {
 }
 export async function getAdminTasks (req){
   const data = await db.collection('task_list').find().toArray();
-  return data;
+  return {tasks:data};
 }
 async function saveIcon(imageUrl,type) {
   console.log("image url : ", imageUrl)
