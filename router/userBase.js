@@ -617,28 +617,29 @@ export async function gameHandler(req) {
     }
 
     const userBalance = await checkBalance(inputData.userId, inputData.bet, inputData.isReal);
-    if (inputData.operation == "start" && userBalance <= 0) {
+    if (inputData.operation == "start") {
+      if (userBalance <= 0) {
         return {
           status: "error",
           data: {
             msg: "no such balance"
           }
         }
-    }
+      }
+      
+      if (inputData.bet > userBalance) {
+        inputData.bet = userBalance;
+      }
 
-    if (inputData.bet > userBalance) {
-      inputData.bet = userBalance;
-    }
-
-    if (inputData.bet < 1) {
-      return {
-        status: "error",
-        data: {
-          msg: "small bet"
+      if (inputData.bet < 1) {
+        return {
+          status: "error",
+          data: {
+            msg: "small bet"
+          }
         }
       }
     }
-    // console.log(inputData);
 
     if (inputData.operation == "start") {
       const result = startGameWithoutSocket(inputData)
