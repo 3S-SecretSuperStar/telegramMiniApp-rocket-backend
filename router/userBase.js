@@ -153,7 +153,7 @@ export async function register(userId, userName, realName, avatarUrl, friend) {
       avatar_url: avatarUrl,
       dailyHistory: "",
       consecutive_days: 0,
-      friend_count:0
+      friend_count: 0
     })
   }
 
@@ -464,14 +464,14 @@ export async function addFriend(req, res) {
         { $set: { 'friend': req.body.friend } })
       await db.collection('users').updateOne(
         { user_id: req.body.friend },
-        { $inc: { 'friend_count' : 1 } })
+        { $inc: { 'friend_count': 1 } })
       if (req.body.real) {
         await db.collection('users').updateOne(
           { user_id: req.body.userId },
           { $inc: { 'balance.real': 25, 'total_earning.real': 25 } })
         await db.collection('users').updateOne(
           { user_id: req.body.friend },
-          { $inc: { 'balance.real': 25, 'total_earning.real': 25,  } })
+          { $inc: { 'balance.real': 25, 'total_earning.real': 25, } })
       } else {
         await db.collection('users').updateOne(
           { user_id: req.body.userId },
@@ -615,16 +615,17 @@ export async function gameHandler(req) {
         }
       }
     }
+
     const userBalance = await checkBalance(inputData.userId, inputData.bet, inputData.isReal);
-    // console.log("userBalance", userBalance);
-    if (userBalance <= 0) {
-      return {
-        status: "error",
-        data: {
-          msg: "no such balance"
+    if (inputData.operation == "start" && userBalance <= 0) {
+        return {
+          status: "error",
+          data: {
+            msg: "no such balance"
+          }
         }
-      }
     }
+
     if (inputData.bet > userBalance) {
       inputData.bet = userBalance;
     }
@@ -687,12 +688,12 @@ export async function loginAdmin(req) {
   const user = await db.collection('admins').findOne({ user_name: data.userName });
   // console.log("user", user)
   if (!user) {
-    return {err:'User not found.'};
+    return { err: 'User not found.' };
   }
   if (!await bcrypt.compare(data.password, user.password)) {
-    return {err:'Invalid password.'};
+    return { err: 'Invalid password.' };
   }
-  return {err:null}
+  return { err: null }
 
 }
 
@@ -705,7 +706,7 @@ export async function registerAdmin(req) {
       password: hashPassword
     }
   )
-  return {err:null}
+  return { err: null }
 }
 export async function InsertTask(req) {
   const data = req.body;
@@ -754,15 +755,15 @@ export async function deleteTask(req) {
   const data = req.body;
   const icon_url = await saveIcon(data.fileUrl, data.type);
   const savePath = "/var/avatar/icon/" + data.type.toString() + '.jpg';
-  fs.unlink(savePath,(err)=>{
-    if(err){
-      console.log("delete file",err)
+  fs.unlink(savePath, (err) => {
+    if (err) {
+      console.log("delete file", err)
       return
     }
   })
 
   await db.collection('task_list').deleteOne(
-    { _id: new ObjectId(data.key) }  );
+    { _id: new ObjectId(data.key) });
 
 }
 export async function getAdminTasks(req) {
