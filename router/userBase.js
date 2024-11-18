@@ -451,13 +451,9 @@ export async function addFriend(req, res) {
     const friend_check = await db.collection('users').findOne({ 'user_id': req.body.userId });
     //  console.log("friend_check",friend_check)
     if (friend_check.friend !== "") {
-      return res
-        .status(400)
-        .json({ msg: "You are already added in friend item" });
+      return  "You are already added in friend item";
     } else if (friend_check.user_name === req.body.friend) {
-      return res
-        .status(400)
-        .json({ msg: "You can't added myself" });
+      return "You can't added myself";
     } else {
       await db.collection('users').updateOne(
         { user_id: req.body.userId },
@@ -485,7 +481,7 @@ export async function addFriend(req, res) {
 
     }
   } catch (error) {
-    res.status(400).json({ msg: error });
+   console.log("error: ",error)
   }
 };
 
