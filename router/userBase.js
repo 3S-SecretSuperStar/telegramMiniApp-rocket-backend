@@ -443,6 +443,7 @@ export async function taskBalance(req) {
 }
 
 export async function addFriend(req, res) {
+  const friendId = Number(req.body.friend);
   const avatarUrl = await saveAvatar(req.body.userAvatarUrl, req.body.userId)
   // console.log("avatar add Friend: ", avatarUrl);
   await register(req.body.userId, req.body.userName, req.body.realName, avatarUrl, "");
@@ -452,28 +453,28 @@ export async function addFriend(req, res) {
     //  console.log("friend_check",friend_check)
     if (friend_check.friend !== "") {
       return  "You are already added in friend item";
-    } else if (friend_check.user_name === req.body.friend) {
+    } else if (friend_check.user_name === friendId) {
       return "You can't added myself";
     } else {
       await db.collection('users').updateOne(
         { user_id: req.body.userId },
-        { $set: { 'friend': req.body.friend } })
+        { $set: { 'friend': friendId } })
       await db.collection('users').updateOne(
-        { user_id: req.body.friend },
+        { user_id: friendId },
         { $inc: { 'friend_count': 1 } })
       if (req.body.real) {
         await db.collection('users').updateOne(
           { user_id: req.body.userId },
           { $inc: { 'balance.real': 25, 'total_earning.real': 25 } })
         await db.collection('users').updateOne(
-          { user_id: req.body.friend },
+          { user_id: friendId },
           { $inc: { 'balance.real': 25, 'total_earning.real': 25, } })
       } else {
         await db.collection('users').updateOne(
           { user_id: req.body.userId },
           { $inc: { 'balance.virtual': 25, 'total_earning.virtual': 25 } })
         await db.collection('users').updateOne(
-          { user_id: req.body.friend },
+          { user_id: friendId },
           { $inc: { 'balance.virtual': 25, 'total_earning.virtual': 25 } })
       }
 
