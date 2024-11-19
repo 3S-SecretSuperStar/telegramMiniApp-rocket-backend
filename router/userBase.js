@@ -31,7 +31,7 @@ async function isNameUnique(userId) {
  * @throws {'name_incorrect'} If the username is incorrect
  */
 function validateName(name) {
-  if (!(name !== undefined)) {
+  if (name === undefined) {
     throw Error('name_incorrect')
   }
 }
@@ -80,7 +80,7 @@ async function startSession(login) {
 export async function checkSession(userName, session) {
   validateSession(session)
 
-  const result = await db.collection('users').findOne({ user_name: userId })
+  const result = await db.collection('users').findOne({ user_id: userId })
   if (!result) {
     throw Error('name_incorrect')
   } else if (session !== result.session) {
