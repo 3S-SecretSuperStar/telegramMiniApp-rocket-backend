@@ -38,7 +38,7 @@ const postRequests = [
   ['change_password', userBase.changePassword],
   ['change_email', userBase.changeEmail],
   ['support', userBase.support],
-  ['users_info', userBase.usersInfo],
+  ['users_info', userBase.userInfo],
   ['resend_letter', userBase.resendConfirmationLetter],
   ['game_history', userBase.gameHistory],
   ['task_perform', userBase.taskPerform],

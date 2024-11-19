@@ -211,7 +211,7 @@ export async function saveAvatar(avatarImg, userId) {
 /**
  * Get info for profile pages
  */
-export async function usersInfo(req) {
+export async function userInfo(req) {
   const data = req.body;
 
   const avatarUrl = await saveAvatar(data.userAvatarUrl, data.userId)
@@ -247,7 +247,7 @@ export async function usersInfo(req) {
   //   }
   // });
   return {
-    userData: userData,
+    userData: outdata,
     // friendNumber: friendNumber,
     // realRank: realRank,
     // virtualRank: virtualRank
