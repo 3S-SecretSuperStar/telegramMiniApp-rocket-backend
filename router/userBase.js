@@ -212,14 +212,50 @@ export async function saveAvatar(avatarImg, userId) {
  * Get info for profile pages
  */
 export async function usersInfo(req) {
+  const data = req.body;
 
-  const avatarUrl = await saveAvatar(req.body.userAvatarUrl, req.body.userId)
+  const avatarUrl = await saveAvatar(data.userAvatarUrl, data.userId)
   // console.log("avatar : ", avatarUrl);
-  await register(req.body.userId, req.body.userName, req.body.realName, avatarUrl, "No friend")
+  await register(data.userId, data.userName, data.realName, avatarUrl, "No friend")
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
-  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, task: 1, dailyHistory: 1 }).toArray()
+  const query = {user_id:Number(data.userId)}
+  const outdata = await db.collection('users').find(query).project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, task: 1, dailyHistory: 1, friend_count:1 }).toArray()
   // console.log("length of fetch data:", data.length)
 
+  // const userId = parseInt(req.body.userId); // Parse userId only once
+
+  // Pre-processing: Create maps for faster lookups (do this once, ideally when data is loaded)
+  // const usersByRealBalance = [...data].sort((a, b) => b.balance.real - a.balance.real);
+  // const usersByVirtualBalance = [...data].sort((a, b) => b.balance.virtual - a.balance.virtual);
+  // const userMap = new Map(data.map(user => [user.user_id, user]));
+
+
+  // const userData = userMap.get(userId);
+
+  // if (!userData) {
+  //   throw new Error("User not found");
+  // }
+
+  // let friendNumber = 0;
+  // const realRank = usersByRealBalance.findIndex(user => user.user_id === userId) + 1;
+  // const virtualRank = usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
+
+  // //Count friends -  This could be optimized further if friend relationships are stored more efficiently.
+  // data.forEach(user => {
+  //   if (user.friend === userId) {
+  //     friendNumber++;
+  //   }
+  // });
+  return {
+    userData: userData,
+    // friendNumber: friendNumber,
+    // realRank: realRank,
+    // virtualRank: virtualRank
+  }
+}
+
+export async function getRanking(req) {
+  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, task: 1, dailyHistory: 1 }).toArray()
   const userId = parseInt(req.body.userId); // Parse userId only once
 
   // Pre-processing: Create maps for faster lookups (do this once, ideally when data is loaded)
@@ -234,22 +270,14 @@ export async function usersInfo(req) {
     throw new Error("User not found");
   }
 
-  let friendNumber = 0;
   const realRank = usersByRealBalance.findIndex(user => user.user_id === userId) + 1;
   const virtualRank = usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
-
-  //Count friends -  This could be optimized further if friend relationships are stored more efficiently.
-  data.forEach(user => {
-    if (user.friend === userId) {
-      friendNumber++;
-    }
-  });
-  return {
-    userData: userData,
-    friendNumber: friendNumber,
-    realRank: realRank,
-    virtualRank: virtualRank
+  return{
+    realRank:realRank,
+    virualRank:virtualRank
   }
+
+
 }
 
 export async function allUsersInfo(req) {
