@@ -105,59 +105,55 @@ export async function endSession(userId) {
  */
 export async function register(userId, userName, realName, avatarUrl, friend) {
   validateName(realName)
-  const isUnique = await isNameUnique(userId)
   // console.log("unique:", isUnique);
-  if (isUnique) {
-    await db.collection('users').insertOne({
-      registrationDateTime: new Date(),
-      user_id: userId,
-      user_name: userName,
-      name: realName,
-      guests: [],
-      balance: {
-        virtual: 10,
-        real: 0
-      },
-      gamesHistory: {
-        virtual: [],
-        real: []
-      },
-      ranking: {
-        virtual: RANKING_DATA[0],
-        real: RANKING_DATA[0]
-      },
-      total_earning: {
-        virtual: 0,
-        real: 0
-      },
-      btc: {
-        wallet: generateWallet(),
-        deposits: [],
-        withdraws: [],
-        affilation: [],
-        deposited: 0
-      },
-      expiration: new Date().getTime(),
-      task: {
-        virtual: {
-          achieve_task: [],
-          done_task: []
-        },
-        real: {
-          achieve_task: [],
-          done_task: []
-        },
-      },
-      friend: friend,
-      first_state: true,
-      avatar_url: avatarUrl,
-      dailyHistory: "",
-      consecutive_days: 0,
-      friend_count: 0
-    })
-  }
 
-
+  await db.collection('users').insertOne({
+    registrationDateTime: new Date(),
+    user_id: userId,
+    user_name: userName,
+    name: realName,
+    guests: [],
+    balance: {
+      virtual: 10,
+      real: 0
+    },
+    gamesHistory: {
+      virtual: [],
+      real: []
+    },
+    ranking: {
+      virtual: RANKING_DATA[0],
+      real: RANKING_DATA[0]
+    },
+    total_earning: {
+      virtual: 0,
+      real: 0
+    },
+    btc: {
+      wallet: generateWallet(),
+      deposits: [],
+      withdraws: [],
+      affilation: [],
+      deposited: 0
+    },
+    expiration: new Date().getTime(),
+    task: {
+      virtual: {
+        achieve_task: [],
+        done_task: []
+      },
+      real: {
+        achieve_task: [],
+        done_task: []
+      },
+    },
+    friend: friend,
+    first_state: true,
+    avatar_url: avatarUrl,
+    dailyHistory: "",
+    consecutive_days: 0,
+    friend_count: 0
+  })
 }
 
 /**
@@ -213,13 +209,15 @@ export async function saveAvatar(avatarImg, userId) {
  */
 export async function userInfo(req) {
   const data = req.body;
-
-  const avatarUrl = await saveAvatar(data.userAvatarUrl, data.userId)
-  // console.log("avatar : ", avatarUrl);
-  await register(data.userId, data.userName, data.realName, avatarUrl, "No friend")
+  const isUnique = await isNameUnique(userId)
+  if (isUnique) {
+    const avatarUrl = await saveAvatar(data.userAvatarUrl, data.userId)
+    // console.log("avatar : ", avatarUrl);
+    await register(data.userId, data.userName, data.realName, avatarUrl, "No friend")
+  }
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
-  const query = {user_id:Number(data.userId)}
-  const outdata = await db.collection('users').find(query).project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, task: 1, dailyHistory: 1, friend_count:1 }).toArray()
+  const query = { user_id: Number(data.userId) }
+  const outdata = await db.collection('users').find(query).project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, task: 1, dailyHistory: 1, friend_count: 1 }).toArray()
   // console.log("length of fetch data:", data.length)
 
   // const userId = parseInt(req.body.userId); // Parse userId only once
@@ -272,9 +270,9 @@ export async function getRanking(req) {
 
   const realRank = usersByRealBalance.findIndex(user => user.user_id === userId) + 1;
   const virtualRank = usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
-  return{
-    realRank:realRank,
-    virualRank:virtualRank
+  return {
+    realRank: realRank,
+    virualRank: virtualRank
   }
 
 
@@ -480,7 +478,7 @@ export async function addFriend(req, res) {
     const friend_check = await db.collection('users').findOne({ 'user_id': req.body.userId });
     //  console.log("friend_check",friend_check)
     if (friend_check.friend !== "") {
-      return  "You are already added in friend item";
+      return "You are already added in friend item";
     } else if (friend_check.user_name === friendId) {
       return "You can't added myself";
     } else {
@@ -510,7 +508,7 @@ export async function addFriend(req, res) {
 
     }
   } catch (error) {
-   console.log("error: ",error)
+    console.log("error: ", error)
   }
 };
 
@@ -651,7 +649,7 @@ export async function gameHandler(req) {
           }
         }
       }
-      
+
       if (inputData.bet > userBalance) {
         inputData.bet = userBalance;
       }
