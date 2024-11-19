@@ -219,7 +219,7 @@ export async function userInfo(req) {
   await register(data.userId, data.userName, data.realName, avatarUrl, "No friend")
   // const data = await db.collection('users').find().project({ _id: 0, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, 'btc.wallet.publicAddress': 1, expiration: 1, ranking: 1 }).toArray()
   const query = {user_id:Number(data.userId)}
-  const outdata = await db.collection('users').find(query).project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, task: 1, dailyHistory: 1, friend_count:1 })
+  const outdata = await db.collection('users').find(query).project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, task: 1, dailyHistory: 1, friend_count:1 }).toArray()
   // console.log("length of fetch data:", data.length)
 
   // const userId = parseInt(req.body.userId); // Parse userId only once
