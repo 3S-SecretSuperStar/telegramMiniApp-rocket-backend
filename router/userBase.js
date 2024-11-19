@@ -209,7 +209,7 @@ export async function saveAvatar(avatarImg, userId) {
  */
 export async function userInfo(req) {
   const data = req.body;
-  const isUnique = await isNameUnique(userId)
+  const isUnique = await isNameUnique(data.userId)
   if (isUnique) {
     const avatarUrl = await saveAvatar(data.userAvatarUrl, data.userId)
     // console.log("avatar : ", avatarUrl);
