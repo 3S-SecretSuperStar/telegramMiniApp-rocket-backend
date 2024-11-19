@@ -272,7 +272,7 @@ export async function getRanking(req) {
   const virtualRank = usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
   return {
     realRank: realRank,
-    virualRank: virtualRank
+    virtualRank: virtualRank
   }
 
 
