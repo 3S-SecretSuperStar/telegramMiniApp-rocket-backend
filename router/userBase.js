@@ -594,7 +594,7 @@ export function addPerformList(req) {
   writeTask(data.userId, data.performTask, data.isReal)
 }
 
-async function writeTask(userId, performTask, isReal) {
+export async function writeTask(userId, performTask, isReal) {
   try {
     const data = await db.collection('users').findOne({ user_id: userId }, { _id: 0, task: 1 });
 
