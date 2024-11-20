@@ -107,7 +107,8 @@ export async function endSession(userId) {
 export async function register(userId, userName, realName, avatarUrl, friend) {
   validateName(realName)
   // console.log("unique:", isUnique);
-
+  const isUnique = await isNameUnique(data.userId)
+  if (isUnique) {
   await db.collection('users').insertOne({
     registrationDateTime: new Date(),
     user_id: userId,
@@ -155,6 +156,7 @@ export async function register(userId, userName, realName, avatarUrl, friend) {
     consecutive_days: 0,
     friend_count: 0
   })
+}
 }
 
 /**
@@ -529,17 +531,24 @@ export async function getFriend(req, res) {
 export async function getTask(req) {
   try {
     const data = await db.collection('task_list').find().toArray()
-    console.log("data task",data)
+    // console.log("data task",data)
     const outData = data.map((_data)=>{
       if(_data.index===31) return {..._data,link_url:_data.link_url+req.body.userId}
       else return _data
     })
-    console.log("outdata task",outData)
+    // console.log("outdata task",outData)
     return {
       task: outData
     }
   } catch (error) {
     console.log(error)
+  }
+}
+
+export async function getStateTaskUfo(req){
+  try{
+    const data = req.body;
+
   }
 }
 
