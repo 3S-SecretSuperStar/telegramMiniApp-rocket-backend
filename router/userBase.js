@@ -109,54 +109,54 @@ export async function register(userId, userName, realName, avatarUrl, friend) {
   // console.log("unique:", isUnique);
   const isUnique = await isNameUnique(data.userId)
   if (isUnique) {
-  await db.collection('users').insertOne({
-    registrationDateTime: new Date(),
-    user_id: userId,
-    user_name: userName,
-    name: realName,
-    guests: [],
-    balance: {
-      virtual: 10,
-      real: 0
-    },
-    gamesHistory: {
-      virtual: [],
-      real: []
-    },
-    ranking: {
-      virtual: RANKING_DATA[0],
-      real: RANKING_DATA[0]
-    },
-    total_earning: {
-      virtual: 0,
-      real: 0
-    },
-    btc: {
-      wallet: generateWallet(),
-      deposits: [],
-      withdraws: [],
-      affilation: [],
-      deposited: 0
-    },
-    expiration: new Date().getTime(),
-    task: {
-      virtual: {
-        achieve_task: [],
-        done_task: []
+    await db.collection('users').insertOne({
+      registrationDateTime: new Date(),
+      user_id: userId,
+      user_name: userName,
+      name: realName,
+      guests: [],
+      balance: {
+        virtual: 10,
+        real: 0
       },
-      real: {
-        achieve_task: [],
-        done_task: []
+      gamesHistory: {
+        virtual: [],
+        real: []
       },
-    },
-    friend: friend,
-    first_state: true,
-    avatar_url: avatarUrl,
-    dailyHistory: "",
-    consecutive_days: 0,
-    friend_count: 0
-  })
-}
+      ranking: {
+        virtual: RANKING_DATA[0],
+        real: RANKING_DATA[0]
+      },
+      total_earning: {
+        virtual: 0,
+        real: 0
+      },
+      btc: {
+        wallet: generateWallet(),
+        deposits: [],
+        withdraws: [],
+        affilation: [],
+        deposited: 0
+      },
+      expiration: new Date().getTime(),
+      task: {
+        virtual: {
+          achieve_task: [],
+          done_task: []
+        },
+        real: {
+          achieve_task: [],
+          done_task: []
+        },
+      },
+      friend: friend,
+      first_state: true,
+      avatar_url: avatarUrl,
+      dailyHistory: "",
+      consecutive_days: 0,
+      friend_count: 0
+    })
+  }
 }
 
 /**
@@ -532,8 +532,8 @@ export async function getTask(req) {
   try {
     const data = await db.collection('task_list').find().toArray()
     // console.log("data task",data)
-    const outData = data.map((_data)=>{
-      if(_data.index===31) return {..._data,link_url:_data.link_url+req.body.userId}
+    const outData = data.map((_data) => {
+      if (_data.index === 31) return { ..._data, link_url: _data.link_url + req.body.userId }
       else return _data
     })
     // console.log("outdata task",outData)
@@ -545,12 +545,14 @@ export async function getTask(req) {
   }
 }
 
-export async function getStateTaskUfo(req){
-  try{
-    const data = req.body;
-
-  }
-}
+// export async function getStateTaskUfo(req) {
+//   try {
+//     const data = req.body;
+//     writeTask(data.userId, [31], data.isReal)
+//   } catch (e) {
+//     console.log(e)
+//   }
+// }
 
 export async function updateAvatar(req) {
   try {

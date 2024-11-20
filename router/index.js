@@ -2,6 +2,7 @@ import express from 'express';
 import * as userBase from './userBase.js';
 import multer from 'multer';
 import fs, { mkdir } from 'fs';
+import axios from 'axios';
 
 // import '@babel/polyfill' // async/await compilation bug
 
@@ -19,7 +20,7 @@ router.use(function (req, res, next) {
 /**
  * Generate api routes
  */
-function routeFunc (controller) {
+function routeFunc(controller) {
   return async (req, res) => {
     try {
       const result = await controller(req)
@@ -42,17 +43,17 @@ const postRequests = [
   ['resend_letter', userBase.resendConfirmationLetter],
   ['game_history', userBase.gameHistory],
   ['task_perform', userBase.taskPerform],
-  ['task_balance',userBase.taskBalance],
+  ['task_balance', userBase.taskBalance],
   ['add_friend', userBase.addFriend],
   ['get_friend', userBase.getFriend],
-  ['check_first',userBase.checkFirst],
-  ['get_task',userBase.getTask],
-  ['update_avatar',userBase.updateAvatar],
-  ['check_dailyReward',userBase.checkDailyReward],
-  ['perform_dailyReward',userBase.performDailyReward],
-  ['add_perform_list', userBase.addPerformList ],
-  ['all_users_info',userBase.allUsersInfo],
-  ['charge_balance',userBase.chargeBalance],
+  ['check_first', userBase.checkFirst],
+  ['get_task', userBase.getTask],
+  ['update_avatar', userBase.updateAvatar],
+  ['check_dailyReward', userBase.checkDailyReward],
+  ['perform_dailyReward', userBase.performDailyReward],
+  ['add_perform_list', userBase.addPerformList],
+  ['all_users_info', userBase.allUsersInfo],
+  ['charge_balance', userBase.chargeBalance],
   ['all_users_id', userBase.allUserId],
   ['operate_game', userBase.gameHandler],
   ['insert_task', userBase.InsertTask],
@@ -79,15 +80,15 @@ postRequests.forEach(([path, controller]) => {
  * @param {string} keywords Page keywords
  */
 
-function addRoute (address, method, title, description, keywords) {
+function addRoute(address, method, title, description, keywords) {
   router.get(`/${address}`, async (req, res) => {
     res.render(
       'template', {
-        app,
-        title,
-        keywords,
-        description
-      }
+      app,
+      title,
+      keywords,
+      description
+    }
     )
     userBase.logVisitor(req)
   })
@@ -115,6 +116,22 @@ router.get('/withdraws/:name', async (req, res) => {
 
 router.get('/confirmation', async (req, res) => {
   userBase.confirmAccount(req, res)
+})
+router.get('/api/rocketTON/verify-task-ufo', async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    const checkUrl = `https://api.ufo.fun/tasks/verify-mint?referrer=0xa01641dF0bFEFb42cb739B550Fd0B4C477983201&subId=${userId}`
+    axios.get(checkUrl)
+      .then((req) => {
+        console.log(req.body)
+        console.log("body : ", req.body)
+        if (req.body.type === "success")
+          userBase.writeTask(userId, [31], false)
+      })
+
+  } catch (e) {
+    console.log(e)
+  }
 })
 
 
