@@ -8,9 +8,10 @@ import moment from 'moment'
 import fs from 'fs'
 import { error } from 'console'
 import { startGame, startGameWithoutSocket, stopGame, stopGameWithoutSocket } from '../game/index.js'
-import multer from 'multer'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import 'dotenv/config'
+
 
 const { ObjectId } = pkg;
 /**
@@ -528,9 +529,14 @@ export async function getFriend(req, res) {
 export async function getTask(req) {
   try {
     const data = await db.collection('task_list').find().toArray()
-    // console.log("data task",data)
+    console.log("data task",data)
+    const outData = data.map((_data)=>{
+      if(_data.index===31) return {..._data,URL:_data.link_url+req.body.userId}
+      else return _data
+    })
+    console.log("outdata task",outData)
     return {
-      task: data
+      task: outData
     }
   } catch (error) {
     console.log(error)
@@ -774,6 +780,8 @@ export async function editTask(req) {
     }
   );
 }
+
+
 
 export async function deleteTask(req) {
   const data = req.body;
