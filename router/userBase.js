@@ -531,7 +531,7 @@ export async function getTask(req) {
     const data = await db.collection('task_list').find().toArray()
     console.log("data task",data)
     const outData = data.map((_data)=>{
-      if(_data.index===31) return {..._data,URL:_data.link_url+req.body.userId}
+      if(_data.index===31) return {..._data,link_url:_data.link_url+req.body.userId}
       else return _data
     })
     console.log("outdata task",outData)
