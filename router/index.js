@@ -122,20 +122,20 @@ router.get('/api/rocketTON/verify-task-ufo', async (req, res) => {
     const checkUrl = `https://api.ufo.fun/tasks/verify-mint?referrer=0xa01641dF0bFEFb42cb739B550Fd0B4C477983201&subId=${userId}`;
     console.log("check url", checkUrl);
 
-    axios.get(checkUrl)
-      .then( async(response) => {
+    await axios.get(checkUrl)
+      .then(async (response) => {
         console.log(response.data);
         console.log("body : ", response.data);
         if (response.data.type === "success") {
           console.log("success")
           await userBase.writeTask(userId, [31], false);
-          return "ok"
+          res.status(200).send(`${userId} success!`)
         }
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-
+    
   } catch (e) {
     console.log(e)
   }
