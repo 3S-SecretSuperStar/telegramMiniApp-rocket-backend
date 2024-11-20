@@ -123,12 +123,13 @@ router.get('/api/rocketTON/verify-task-ufo', async (req, res) => {
     console.log("check url", checkUrl);
 
     axios.get(checkUrl)
-      .then((response) => {
+      .then( async(response) => {
         console.log(response.data);
         console.log("body : ", response.data);
         if (response.data.type === "success") {
           console.log("success")
-          userBase.writeTask(userId, [31], false);
+          await userBase.writeTask(userId, [31], false);
+          return "ok"
         }
       })
       .catch((error) => {
