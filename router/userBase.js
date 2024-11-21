@@ -107,7 +107,7 @@ export async function endSession(userId) {
 export async function register(userId, userName, realName, avatarUrl, friend) {
   validateName(realName)
   // console.log("unique:", isUnique);
-  const isUnique = await isNameUnique(data.userId)
+  const isUnique = await isNameUnique(userId)
   if (isUnique) {
     await db.collection('users').insertOne({
       registrationDateTime: new Date(),
@@ -213,6 +213,7 @@ export async function saveAvatar(avatarImg, userId) {
 export async function userInfo(req) {
   const data = req.body;
   const isUnique = await isNameUnique(data.userId)
+  console.log("isUnique", isNameUnique)
   if (isUnique) {
     const avatarUrl = await saveAvatar(data.userAvatarUrl, data.userId)
     // console.log("avatar : ", avatarUrl);
