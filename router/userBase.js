@@ -260,13 +260,14 @@ export async function getRanking(req) {
   
   const data = await db.collection('users').find().project({ _id: 0, user_id: 1, balance: 1}).toArray()
   const userId = Number(req.body.userId); // Parse userId only once
+  console.log(userId)
 
   // Pre-processing: Create maps for faster lookups (do this once, ideally when data is loaded)
   const usersByRealBalance =  data.sort((a, b) => b.balance.real - a.balance.real);
   const usersByVirtualBalance =  data.sort((a, b) => b.balance.virtual - a.balance.virtual);
   const realRank =  usersByRealBalance.findIndex(user => user.user_id === userId) + 1;
   const virtualRank =  usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
-  console.log(virtualRank," sort   ",usersByVirtualBalance[virtualRank]," ")
+  console.log(virtualRank," sort   ",usersByVirtualBalance[virtualRank-1]," ")
   return {
     realRank: realRank,
     virtualRank: virtualRank
