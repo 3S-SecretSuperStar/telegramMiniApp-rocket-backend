@@ -267,7 +267,9 @@ export async function getRanking(req) {
   const usersByVirtualBalance =  [...data].sort((a, b) => b.balance.virtual - a.balance.virtual);
   const realRank =  usersByRealBalance.findIndex(user => user.user_id === userId) + 1;
   const virtualRank =  usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
+  console.log(virtualRank," sort   ",usersByVirtualBalance[virtualRank-2]," ")
   console.log(virtualRank," sort   ",usersByVirtualBalance[virtualRank-1]," ")
+  console.log(virtualRank," sort   ",usersByVirtualBalance[virtualRank]," ")
   return {
     realRank: realRank,
     virtualRank: virtualRank
