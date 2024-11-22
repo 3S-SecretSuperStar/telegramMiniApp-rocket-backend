@@ -261,10 +261,10 @@ export async function getRanking(req) {
   const userId = parseInt(req.body.userId); // Parse userId only once
 
   // Pre-processing: Create maps for faster lookups (do this once, ideally when data is loaded)
-  const usersByRealBalance = data.sort((a, b) => b.balance.real - a.balance.real);
-  const usersByVirtualBalance = data.sort((a, b) => b.balance.virtual - a.balance.virtual);
-  const realRank = usersByRealBalance.findIndex(user => user.user_id === userId) + 1;
-  const virtualRank = usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
+  const usersByRealBalance = await data.sort((a, b) => b.balance.real - a.balance.real);
+  const usersByVirtualBalance = await data.sort((a, b) => b.balance.virtual - a.balance.virtual);
+  const realRank = await usersByRealBalance.findIndex(user => user.user_id === userId) + 1;
+  const virtualRank = await usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
   return {
     realRank: realRank,
     virtualRank: virtualRank
