@@ -257,21 +257,12 @@ export async function userInfo(req) {
 }
 
 export async function getRanking(req) {
-  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, name: 1, user_name: 1, gamesHistory: 1, balance: 1, referral: 1, ranking: 1, first_state: 1, task: 1, dailyHistory: 1 }).toArray()
+  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, balance: 1}).toArray()
   const userId = parseInt(req.body.userId); // Parse userId only once
 
   // Pre-processing: Create maps for faster lookups (do this once, ideally when data is loaded)
-  const usersByRealBalance = [...data].sort((a, b) => b.balance.real - a.balance.real);
-  const usersByVirtualBalance = [...data].sort((a, b) => b.balance.virtual - a.balance.virtual);
-  const userMap = new Map(data.map(user => [user.user_id, user]));
-
-
-  const userData = userMap.get(userId);
-
-  if (!userData) {
-    throw new Error("User not found");
-  }
-
+  const usersByRealBalance = data.sort((a, b) => b.balance.real - a.balance.real);
+  const usersByVirtualBalance = data.sort((a, b) => b.balance.virtual - a.balance.virtual);
   const realRank = usersByRealBalance.findIndex(user => user.user_id === userId) + 1;
   const virtualRank = usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
   return {
