@@ -263,8 +263,8 @@ export async function getRanking(req) {
   console.log(userId)
 
   // Pre-processing: Create maps for faster lookups (do this once, ideally when data is loaded)
-  const usersByRealBalance =  data.sort((a, b) => b.balance.real - a.balance.real);
-  const usersByVirtualBalance =  data.sort((a, b) => b.balance.virtual - a.balance.virtual);
+  const usersByRealBalance =  [...data].sort((a, b) => b.balance.real - a.balance.real);
+  const usersByVirtualBalance =  [...data].sort((a, b) => b.balance.virtual - a.balance.virtual);
   const realRank =  usersByRealBalance.findIndex(user => user.user_id === userId) + 1;
   const virtualRank =  usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
   console.log(virtualRank," sort   ",usersByVirtualBalance[virtualRank-1]," ")
