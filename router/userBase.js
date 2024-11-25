@@ -575,13 +575,21 @@ export async function checkDailyReward(req) {
 }
 
 export async function performDailyReward(req) {
+  try {
+    const currentDate = moment().utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+    const performDailyReward = await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export async function performDailyADS(req) {
   // console.log("perform daily reward", req.body)
   try {
     // console.log("performDailyReward ",req.body)
 
-
     const currentDate = moment().utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-    const performDailyReward = await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
+    const performDailyReward = await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
     // console.log("performDailyReward",performDailyReward)
   } catch (error) {
     console.log(error)
