@@ -153,6 +153,7 @@ export async function register(userId, userName, realName, avatarUrl, friend) {
       first_state: true,
       avatar_url: avatarUrl,
       dailyHistory: "",
+      dailyADS: "",
       consecutive_days: 0,
       friend_count: 0
     })
@@ -257,19 +258,19 @@ export async function userInfo(req) {
 }
 
 export async function getRanking(req) {
-  
-  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, balance: 1}).toArray()
+
+  const data = await db.collection('users').find().project({ _id: 0, user_id: 1, balance: 1 }).toArray()
   const userId = Number(req.body.userId); // Parse userId only once
   console.log(userId)
 
   // Pre-processing: Create maps for faster lookups (do this once, ideally when data is loaded)
-  const usersByRealBalance =  [...data].sort((a, b) => b.balance.real - a.balance.real);
-  const usersByVirtualBalance =  [...data].sort((a, b) => b.balance.virtual - a.balance.virtual);
-  const realRank =  usersByRealBalance.findIndex(user => user.user_id === userId) + 1;
-  const virtualRank =  usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
-  console.log(virtualRank," sort   ",usersByVirtualBalance[virtualRank-2]," ")
-  console.log(virtualRank," sort   ",usersByVirtualBalance[virtualRank-1]," ")
-  console.log(virtualRank," sort   ",usersByVirtualBalance[virtualRank]," ")
+  const usersByRealBalance = [...data].sort((a, b) => b.balance.real - a.balance.real);
+  const usersByVirtualBalance = [...data].sort((a, b) => b.balance.virtual - a.balance.virtual);
+  const realRank = usersByRealBalance.findIndex(user => user.user_id === userId) + 1;
+  const virtualRank = usersByVirtualBalance.findIndex(user => user.user_id === userId) + 1;
+  console.log(virtualRank, " sort   ", usersByVirtualBalance[virtualRank - 2], " ")
+  console.log(virtualRank, " sort   ", usersByVirtualBalance[virtualRank - 1], " ")
+  console.log(virtualRank, " sort   ", usersByVirtualBalance[virtualRank], " ")
   return {
     realRank: realRank,
     virtualRank: virtualRank
@@ -564,8 +565,10 @@ export async function updateAvatar(req) {
 
 export async function checkDailyReward(req) {
   try {
-    const dailyRewardInfo = await db.collection('users').findOne({ user_id: req.body.userId }, { _id: 0, dailyHistory: 1, consecutive_days: 1 })
-    return { dailyRewardInfo: { date: dailyRewardInfo.dailyHistory, consecutive_days: dailyRewardInfo.consecutive_days } }
+    const dailyInfo = await db.collection('users').findOne({ user_id: req.body.userId }, { _id: 0, dailyHistory: 1, consecutive_days: 1, dailyADS: 1 })
+    console.log("dailyInfo : ",dailyInfo)
+    const dailyADS = dailyInfo.dailyADS?dailyInfo.dailyADS:""
+    return { dailyRewardInfo: { date: dailyInfo.dailyHistory, consecutive_days: dailyInfo.consecutive_days },dailyADSInfo :{date:dailyADS} }
   } catch (error) {
     console.log(error)
   }
