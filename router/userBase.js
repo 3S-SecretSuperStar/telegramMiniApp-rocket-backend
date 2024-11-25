@@ -566,9 +566,9 @@ export async function updateAvatar(req) {
 export async function checkDailyReward(req) {
   try {
     const dailyInfo = await db.collection('users').findOne({ user_id: req.body.userId }, { _id: 0, dailyHistory: 1, consecutive_days: 1, dailyADS: 1 })
-    console.log("dailyInfo : ",dailyInfo)
-    const dailyADS = dailyInfo.dailyADS?dailyInfo.dailyADS:""
-    return { dailyRewardInfo: { date: dailyInfo.dailyHistory, consecutive_days: dailyInfo.consecutive_days },dailyADSInfo :{date:dailyADS} }
+    console.log("dailyInfo : ", dailyInfo)
+    const dailyADS = dailyInfo.dailyADS ? dailyInfo.dailyADS : ""
+    return { dailyRewardInfo: { date: dailyInfo.dailyHistory, consecutive_days: dailyInfo.consecutive_days }, dailyADSInfo: { date: dailyADS } }
   } catch (error) {
     console.log(error)
   }
@@ -577,7 +577,9 @@ export async function checkDailyReward(req) {
 export async function performDailyReward(req) {
   try {
     const currentDate = moment().utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-    const performDailyReward = await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
+    const performDailyReward = req.body.isReal ?
+      await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.real': parseFloat(req.body.amount) }})
+      : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.virtual': parseFloat(req.body.amount) }})
   } catch (error) {
     console.log(error)
   }
@@ -589,7 +591,9 @@ export async function performDailyADS(req) {
     // console.log("performDailyReward ",req.body)
 
     const currentDate = moment().utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-    const performDailyReward = await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
+    const performDailyReward = req.body.isReal
+      ? await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate }, $inc: { 'balance.real': parseFloat(req.body.amount) }, $pull: { "task.real.achieve_task": 34 } })
+      : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate }, $inc: { 'balance.virtual': parseFloat(req.body.amount) }, $pull: { "task.virtual.achieve_task": 34 } })
     // console.log("performDailyReward",performDailyReward)
   } catch (error) {
     console.log(error)
