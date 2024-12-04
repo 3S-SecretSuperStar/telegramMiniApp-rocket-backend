@@ -612,10 +612,12 @@ export async function writeTask(userId, performTask, isReal) {
 
     if (data) {
       let combinedArray;
-      if (isReal)
+      if (isReal) {
         combinedArray = [...data.task.real.achieve_task, ...performTask];
-      else
+      }
+      else {
         combinedArray = [...data.task.virtual.achieve_task, ...performTask];
+      }
 
       // create a Set to track unique names
       const uniqueNames = new Set();
@@ -777,6 +779,8 @@ export async function InsertTask(req) {
       link_url: data.url,
       fixed: Number(data.fixed),
       icon_url: icon_url,
+      filter: Number(filter),
+      highLight: Number(highLight)
     }
   )
 
@@ -798,6 +802,8 @@ export async function editTask(req) {
         sort: Number(data.sort),
         link_url: data.url,
         fixed: Number(data.fixed),
+        filter: Number(filter),
+        highLight: Number(highLight),
         ...(icon_url && { icon_url: icon_url }),
       }
     }
