@@ -779,8 +779,8 @@ export async function InsertTask(req) {
       link_url: data.url,
       fixed: Number(data.fixed),
       icon_url: icon_url,
-      filter: Number(filter),
-      highLight: Number(highLight)
+      filter: Number(data.filter),
+      highLight: Number(data.highLight)
     }
   )
 
@@ -802,8 +802,8 @@ export async function editTask(req) {
         sort: Number(data.sort),
         link_url: data.url,
         fixed: Number(data.fixed),
-        filter: Number(filter),
-        highLight: Number(highLight),
+        filter: Number(data.filter),
+        highLight: Number(data.highLight),
         ...(icon_url && { icon_url: icon_url }),
       }
     }
