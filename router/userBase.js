@@ -11,7 +11,8 @@ import { startGame, startGameWithoutSocket, stopGame, stopGameWithoutSocket } fr
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
-
+import fetch from 'node-fetch'
+import { BOT_TOKEN } from '../utils/globals.js'
 
 const { ObjectId } = pkg;
 /**
@@ -578,8 +579,8 @@ export async function performDailyReward(req) {
   try {
     const currentDate = moment().utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
     const performDailyReward = req.body.isReal ?
-      await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.real': parseFloat(req.body.amount) }})
-      : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.virtual': parseFloat(req.body.amount) }})
+      await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.real': parseFloat(req.body.amount) } })
+      : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
   } catch (error) {
     console.log(error)
   }
@@ -831,6 +832,21 @@ export async function getAdminTasks(req) {
   const data = await db.collection('task_list').find().toArray();
   return { tasks: data };
 }
+
+export async function payTelegramStar(req, res) {
+  const data = req.body;
+  if (data.amount < 0) {
+    res.status(400).json({ msg: "not valid amount" });
+  }
+  try {
+    const result = await createInvoice(data.userId, data.amount, data.isReal, "coin", "Do you want to buy 10 coin for 1 star?"); 
+    return {invoiceUrl: result}
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "internal server error" });
+  }
+}
+
 async function saveIcon(imageUrl, type) {
   // console.log("image url : ", imageUrl)
   if (imageUrl) {
@@ -849,4 +865,42 @@ async function saveIcon(imageUrl, type) {
     }
   }
   else return null
+}
+
+async function createInvoice(userId, amount, is_real, title, description) {
+  const result = await db.collection('payment').insertOne(
+    {
+      telegram_id: userId,
+      amount: amount * 10,
+      is_real: is_real,
+      type: title,
+      description: description,
+      status: "pending"
+    }
+  )
+  const invoiceId = result.insertedId;
+  const payload = `${userId}_${invoiceId}`;
+  const data = {
+    "title": `${title} purchase`,
+    "description": description,
+    "payload": payload,
+    "currency": "XTR",
+    "prices": [{ "label": "Telegram Stars", "amount": int(amount * 100) }]
+  }
+
+  const headers = new Headers()
+  headers.append('Content-Type', 'application/json')
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/createInvoiceLink`;
+  const response = await fetch(url, { 
+    method: 'POST', 
+    body: JSON.stringify(data), 
+    headers 
+  })
+
+  if (response.ok) {
+    const data = await response.json();
+    return data.result;
+  } else {
+    return false;
+  }
 }

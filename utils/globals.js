@@ -28,3 +28,5 @@ export const TASK_LIST =[
   {method : TASK_TYPE[1], limit : 3, value : 50},
   {method : TASK_TYPE[1], limit : 5, value :300}
 ]
+
+export const BOT_TOKEN = "7379750890:AAGYFlyXnjrC8kbyxRdYhUbisoTbCWdPCg8";

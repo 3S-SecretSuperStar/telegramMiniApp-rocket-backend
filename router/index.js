@@ -63,7 +63,8 @@ const postRequests = [
   ['login_admin', userBase.loginAdmin],
   ['register_admin', userBase.registerAdmin],
   ['get_admin_tasks', userBase.getAdminTasks],
-  ['get_ranking', userBase.getRanking]
+  ['get_ranking', userBase.getRanking],
+  ['pay_telegramstar', userBase.payTelegramStar]
 ]
 
 postRequests.forEach(([path, controller]) => {
