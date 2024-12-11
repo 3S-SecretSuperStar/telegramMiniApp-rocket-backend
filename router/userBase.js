@@ -839,8 +839,8 @@ export async function payTelegramStar(req, res) {
     throw "not valid amount";
   }
   try {
-    const result = await createInvoice(data.userId, data.amount, data.isReal, "coin", "Do you want to buy 10 coin for 1 star?"); 
-    return {invoiceUrl: result}
+    const result = await createInvoice(data.userId, data.amount, data.isReal, "coin", "Do you want to buy 10 coin for 1 star?");
+    return { invoiceUrl: result }
   } catch (error) {
     console.log(error);
     throw "internal server error";
@@ -891,16 +891,12 @@ async function createInvoice(userId, amount, is_real, title, description) {
   const headers = new Headers()
   headers.append('Content-Type', 'application/json')
   const url = `https://api.telegram.org/bot${BOT_TOKEN}/createInvoiceLink`;
-  const response = await fetch(url, { 
-    method: 'POST', 
-    body: JSON.stringify(data), 
-    headers 
+  const response = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers
   })
-
-  if (response.ok) {
-    const data = await response.json();
-    return data.result;
-  } else {
-    return false;
-  }
+  const res = await response.json();
+  console.log(res);
+  return res.result;
 }
