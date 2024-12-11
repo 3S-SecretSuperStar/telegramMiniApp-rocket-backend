@@ -836,14 +836,14 @@ export async function getAdminTasks(req) {
 export async function payTelegramStar(req, res) {
   const data = req.body;
   if (data.amount < 0) {
-    res.status(400).json({ msg: "not valid amount" });
+    throw "not valid amount";
   }
   try {
     const result = await createInvoice(data.userId, data.amount, data.isReal, "coin", "Do you want to buy 10 coin for 1 star?"); 
     return {invoiceUrl: result}
   } catch (error) {
     console.log(error);
-    res.status(500).json({ msg: "internal server error" });
+    throw "internal server error";
   }
 }
 
