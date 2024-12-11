@@ -885,7 +885,7 @@ async function createInvoice(userId, amount, is_real, title, description) {
     "description": description,
     "payload": payload,
     "currency": "XTR",
-    "prices": [{ "label": "Telegram Stars", "amount": Number(amount * 100) }]
+    "prices": [{ "label": "Telegram Stars", "amount": Number(amount) }]
   }
 
   const headers = new Headers()
