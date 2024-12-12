@@ -881,11 +881,11 @@ async function createInvoice(userId, amount, is_real, title, description) {
   const invoiceId = result.insertedId;
   const payload = `${userId}_${invoiceId}`;
   const data = {
-    "title": `${title} purchase`,
+    "title": `${amount * 10} RocketTON ${title}s`,
     "description": description,
     "payload": payload,
     "currency": "XTR",
-    "prices": [{ "label": `${amount * 10} Rocket Ton Coins`, "amount": Number(amount) }]
+    "prices": [{ "label": `Rocket Ton Coins`, "amount": Number(amount) }]
   }
 
   const headers = new Headers()
