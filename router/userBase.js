@@ -12,7 +12,6 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import fetch from 'node-fetch'
-import { BOT_TOKEN } from '../utils/globals.js'
 
 const { ObjectId } = pkg;
 /**
@@ -890,7 +889,7 @@ async function createInvoice(userId, amount, is_real, title, description) {
 
   const headers = new Headers()
   headers.append('Content-Type', 'application/json')
-  const url = `https://api.telegram.org/bot${BOT_TOKEN}/createInvoiceLink`;
+  const url = `https://api.telegram.org/bot${process.env.BOT_TOKEN}/createInvoiceLink`;
   const response = await fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
