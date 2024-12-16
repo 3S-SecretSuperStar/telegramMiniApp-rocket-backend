@@ -577,9 +577,15 @@ export async function checkDailyReward(req) {
 export async function performDailyReward(req) {
   try {
     const currentDate = moment().utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-    const performDailyReward = req.body.isReal ?
-      await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.real': parseFloat(req.body.amount) } })
-      : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
+    if (req.task != 38) {
+      req.body.isReal ?
+        await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.real': parseFloat(req.body.amount) } })
+        : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
+    } else {
+      req.body.isReal ?
+        await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.real': parseFloat(req.body.amount) } })
+        : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
+    }
   } catch (error) {
     console.log(error)
   }
