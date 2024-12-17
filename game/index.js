@@ -84,7 +84,7 @@ async function writeStatistics(isReal, userId, historyData) {
 }
 
 function nonNullRandom() {
-  return Math.random() || nonNullRandom()
+  return 0.1+Math.random()*0.89 || nonNullRandom()
 }
 
 async function updateBalance(userId, amount, isReal) {
