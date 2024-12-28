@@ -625,7 +625,7 @@ export async function writeTask(userId, performTask, isReal) {
       }
       else {
         combinedArray = [...data.task.virtual.achieve_task, ...performTask];
-        console.log(perfromTask);
+        console.log(performTask);
         performList = data.task.virtual.done_task.filter(item => !performTask.includes(item));
       }
 
