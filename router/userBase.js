@@ -583,8 +583,8 @@ export async function performDailyReward(req) {
         : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
     } else {
       req.body.isReal ?
-        await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.real': parseFloat(req.body.amount)}, $push: { 'task.real.done_task': req.body.task }, $pull: { "task.real.achieve_task": req.body.task } })
-        : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.virtual': parseFloat(req.body.amount)}, $push: { 'task.virtual.done_task': req.body.task }, $pull: { "task.virtual.achieve_task": req.body.task } })
+        await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.real': parseFloat(req.body.amount)}, $push: { 'task.real.done_task': req.body.task }})
+        : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.virtual': parseFloat(req.body.amount)}, $push: { 'task.virtual.done_task': req.body.task }})
     }
   } catch (error) {
     console.log(error)
@@ -618,11 +618,26 @@ export async function writeTask(userId, performTask, isReal) {
 
     if (data) {
       let combinedArray;
+      let performList;
       if (isReal) {
         combinedArray = [...data.task.real.achieve_task, ...performTask];
+        performList = data.task.real.done_task.filter((item) => {
+          if (performTask.findOne(item)) {
+            return false;
+          } else {
+            return true;
+          }
+        })
       }
       else {
         combinedArray = [...data.task.virtual.achieve_task, ...performTask];
+        performList = data.task.virtual.done_task.filter((item) => {
+          if (performTask.findOne(item)) {
+            return false;
+          } else {
+            return true;
+          }
+        })
       }
 
       // create a Set to track unique names
@@ -636,9 +651,9 @@ export async function writeTask(userId, performTask, isReal) {
       })
       // console.log(uniqueArray)
       if (isReal)
-        await db.collection('users').updateOne({ user_id: userId }, { $set: { 'task.real.achieve_task': uniqueArray } });
+        await db.collection('users').updateOne({ user_id: userId }, { $set: { 'task.real.achieve_task': uniqueArray, 'task.real.done_task': performList } });
       else
-        await db.collection('users').updateOne({ user_id: userId }, { $set: { 'task.virtual.achieve_task': uniqueArray } });
+        await db.collection('users').updateOne({ user_id: userId }, { $set: { 'task.virtual.achieve_task': uniqueArray, 'task.virtual.done_task': performList } });
     }
   } catch (e) {
     console.log(e)
