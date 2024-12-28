@@ -583,8 +583,8 @@ export async function performDailyReward(req) {
         : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyHistory': currentDate, 'consecutive_days': req.body.consecutiveDays }, $inc: { 'balance.virtual': parseFloat(req.body.amount) } })
     } else {
       req.body.isReal ?
-        await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.real': parseFloat(req.body.amount)}, $push: { 'task.real.done_task': req.body.task } })
-        : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.virtual': parseFloat(req.body.amount)}, $push: { 'task.virtual.done_task': req.body.task } })
+        await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.real': parseFloat(req.body.amount)}, $push: { 'task.real.done_task': req.body.task }, $pull: { "task.real.achieve_task": req.body.task } })
+        : await db.collection('users').updateOne({ user_id: req.body.userId }, { $set: { 'dailyADS': currentDate }, $inc: { 'balance.virtual': parseFloat(req.body.amount)}, $push: { 'task.virtual.done_task': req.body.task }, $pull: { "task.virtual.achieve_task": req.body.task } })
     }
   } catch (error) {
     console.log(error)
@@ -598,8 +598,8 @@ export async function performDailyADS(req) {
 
     const currentDate = moment().utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
     const performDailyReward = req.body.isReal
-      ? await db.collection('users').updateOne({ user_id: req.body.userId }, { $inc: { 'balance.real': parseFloat(req.body.amount) }, $pull: { "task.real.achieve_task": req.body.task } })
-      : await db.collection('users').updateOne({ user_id: req.body.userId }, { $inc: { 'balance.virtual': parseFloat(req.body.amount) }, $pull: { "task.virtual.achieve_task": req.body.task } })
+      ? await db.collection('users').updateOne({ user_id: req.body.userId }, { $inc: { 'balance.real': parseFloat(req.body.amount) } })
+      : await db.collection('users').updateOne({ user_id: req.body.userId }, { $inc: { 'balance.virtual': parseFloat(req.body.amount) }})
     // console.log("performDailyReward",performDailyReward)
   } catch (error) {
     console.log(error)
