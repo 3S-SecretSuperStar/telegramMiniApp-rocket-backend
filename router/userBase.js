@@ -621,24 +621,16 @@ export async function writeTask(userId, performTask, isReal) {
       let performList;
       if (isReal) {
         combinedArray = [...data.task.real.achieve_task, ...performTask];
-        performList = data.task.real.done_task.filter((item) => {
-          if (performTask.findOne(item)) {
-            return false;
-          } else {
-            return true;
-          }
-        })
+        performList = data.task.real.done_task.filter(item => !performTask.includes(item));
       }
       else {
         combinedArray = [...data.task.virtual.achieve_task, ...performTask];
-        performList = data.task.virtual.done_task.filter((item) => {
-          if (performTask.findOne(item)) {
-            return false;
-          } else {
-            return true;
-          }
-        })
+        console.log(perfromTask);
+        performList = data.task.virtual.done_task.filter(item => !performTask.includes(item));
       }
+
+      console.log(performList);
+      
 
       // create a Set to track unique names
       const uniqueNames = new Set();
