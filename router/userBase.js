@@ -598,8 +598,8 @@ export async function performDailyADS(req) {
 
     const currentDate = moment().utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
     const performDailyReward = req.body.isReal
-      ? await db.collection('users').updateOne({ user_id: req.body.userId }, { $inc: { 'balance.real': parseFloat(req.body.amount) } })
-      : await db.collection('users').updateOne({ user_id: req.body.userId }, { $inc: { 'balance.virtual': parseFloat(req.body.amount) }})
+      ? await db.collection('users').updateOne({ user_id: req.body.userId }, { $inc: { 'balance.real': parseFloat(req.body.amount) }, $pull: { 'task.real.achieve_task': req.body.task }})
+      : await db.collection('users').updateOne({ user_id: req.body.userId }, { $inc: { 'balance.virtual': parseFloat(req.body.amount) }, $pull: { 'task.virtual.achieve_task': req.body.task }})
     // console.log("performDailyReward",performDailyReward)
   } catch (error) {
     console.log(error)
@@ -631,7 +631,6 @@ export async function writeTask(userId, performTask, isReal) {
 
       console.log(performList);
       
-
       // create a Set to track unique names
       const uniqueNames = new Set();
       const uniqueArray = combinedArray.filter((item) => {
